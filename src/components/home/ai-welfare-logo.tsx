@@ -11,11 +11,21 @@ export function AIWelfareLogo({ className = "", size = "md" }: LogoProps) {
   const isSm = size === "sm";
   const isLg = size === "lg";
 
+  const pxSize = isSm ? 40 : isLg ? 80 : 56;
+
   return (
     <div className={`flex items-center gap-3 select-none ${className}`}>
       {/* Emblem SVG */}
-      <div className={`flex-shrink-0 ${isSm ? "w-10 h-10" : isLg ? "w-20 h-20" : "w-14 h-14"}`}>
-        <svg viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full drop-shadow-xs">
+      <div className={`flex-shrink-0 ${isSm ? "w-10 h-10" : isLg ? "w-20 h-20" : "w-14 h-14"}`} style={{ width: `${pxSize}px`, height: `${pxSize}px` }}>
+        <svg
+          width={pxSize}
+          height={pxSize}
+          viewBox="0 0 160 160"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          style={{ width: `${pxSize}px`, height: `${pxSize}px`, maxWidth: `${pxSize}px` }}
+          className="w-full h-full drop-shadow-xs"
+        >
           {/* House Roof in Blue */}
           <path
             d="M80 18L138 68H122L80 32L38 68H22L80 18Z"

@@ -12,8 +12,8 @@ export function HeroCarousel() {
     <section className="relative w-full overflow-hidden bg-gradient-to-r from-[#eef9f9] via-[#f7fbff] to-[#f0f9ff] py-8 sm:py-12 lg:py-16 border-b border-slate-100">
       
       {/* Organic Curved Wave Accents (Bottom Left & Top Right) */}
-      <div className="absolute -bottom-10 -left-10 w-96 h-96 pointer-events-none opacity-90 select-none">
-        <svg viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+      <div className="absolute -bottom-10 -left-10 w-96 h-96 pointer-events-none opacity-90 select-none" style={{ width: "384px", height: "384px" }}>
+        <svg width="384" height="384" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "384px", height: "384px", maxWidth: "384px" }} className="w-full h-full">
           {/* Mint Green Wave */}
           <path
             d="M-50 220C50 180 180 260 220 380C160 420 50 400 -50 400Z"

@@ -19,8 +19,8 @@ export function GovHeader() {
         {/* Left: National Emblem & Ministry */}
         <div className="flex items-center gap-3">
           {/* Ashoka Lion Emblem Vector */}
-          <div className="w-11 h-14 flex-shrink-0 flex items-center justify-center">
-            <svg viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full text-slate-800 drop-shadow-xs">
+          <div className="w-11 h-14 flex-shrink-0 flex items-center justify-center" style={{ width: "44px", height: "56px", minWidth: "44px" }}>
+            <svg width="44" height="56" viewBox="0 0 100 130" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "44px", height: "56px", maxWidth: "44px", maxHeight: "56px" }} className="w-11 h-14 text-slate-800 drop-shadow-xs">
               {/* Ashoka Lion Capital Graphic */}
               <circle cx="50" cy="20" r="10" stroke="currentColor" strokeWidth="4" />
               <path d="M30 40C30 30 40 25 50 25C60 25 70 30 70 40C70 55 50 62 50 62" stroke="currentColor" strokeWidth="4" />
@@ -69,8 +69,8 @@ export function GovHeader() {
 
           {/* Digital India Official Logo */}
           <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
-            <div className="w-10 h-10 flex-shrink-0">
-              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
+            <div className="w-10 h-10 flex-shrink-0" style={{ width: "40px", height: "40px" }}>
+              <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style={{ width: "40px", height: "40px", maxWidth: "40px" }} className="w-10 h-10">
                 {/* Spiral Swirl with Saffron, White, Green */}
                 <circle cx="50" cy="50" r="44" stroke="#e2e8f0" strokeWidth="2" fill="white" />
                 <path d="M50 16C31 16 16 31 16 50C16 69 31 84 50 84C62 84 73 78 80 68" stroke="#ff9933" strokeWidth="6" strokeLinecap="round" />
