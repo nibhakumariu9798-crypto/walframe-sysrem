@@ -76,78 +76,78 @@ export function AboutSection() {
           </div>
 
           {/* Live System Metrics Card */}
-          <div className="lg:col-span-6 bg-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="lg:col-span-6 bg-gradient-to-br from-white via-sky-50/60 to-blue-50/50 text-slate-800 rounded-2xl p-6 sm:p-8 shadow-lg shadow-sky-900/5 border border-sky-100 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-sky-200/20 rounded-full blur-3xl pointer-events-none" />
             
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="flex items-center justify-between pb-4 border-b border-sky-100">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-mono text-xs font-semibold text-teal-300 uppercase tracking-wider">
+                <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="font-mono text-xs font-bold text-sky-900 uppercase tracking-wider">
                   Live System Operating Telemetry
                 </span>
               </div>
-              <Badge variant="outline" className="border-teal-500 text-teal-300 text-[10px]">
+              <Badge variant="outline" className="border-emerald-300 text-emerald-800 bg-emerald-50 text-[10px] font-bold">
                 Active
               </Badge>
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:gap-6 py-6">
-              <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Building2 className="w-4 h-4 text-teal-400" />
+              <div className="bg-white p-4 rounded-xl border border-sky-100 shadow-xs">
+                <div className="flex items-center gap-2 text-slate-500 text-xs mb-1 font-medium">
+                  <Building2 className="w-4 h-4 text-sky-600" />
                   <span>Certified Homes</span>
                 </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-white">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                   {institutions.length}
                 </div>
-                <div className="text-[10px] text-teal-300/80 mt-1 font-medium">
+                <div className="text-[11px] text-sky-700 mt-1 font-semibold">
                   {totalCapacity} Verified Beds
                 </div>
               </div>
 
-              <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Users className="w-4 h-4 text-emerald-400" />
+              <div className="bg-white p-4 rounded-xl border border-sky-100 shadow-xs">
+                <div className="flex items-center gap-2 text-slate-500 text-xs mb-1 font-medium">
+                  <Users className="w-4 h-4 text-emerald-600" />
                   <span>Enrolled Residents</span>
                 </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-white">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                   {beneficiaries.length}
                 </div>
-                <div className="text-[10px] text-emerald-300/80 mt-1 font-medium">
+                <div className="text-[11px] text-emerald-700 mt-1 font-semibold">
                   Children &amp; Senior Citizens
                 </div>
               </div>
 
-              <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Boxes className="w-4 h-4 text-indigo-400" />
+              <div className="bg-white p-4 rounded-xl border border-sky-100 shadow-xs">
+                <div className="flex items-center gap-2 text-slate-500 text-xs mb-1 font-medium">
+                  <Boxes className="w-4 h-4 text-indigo-600" />
                   <span>Stock Items Monitored</span>
                 </div>
-                <div className="text-2xl sm:text-3xl font-extrabold text-white">
+                <div className="text-2xl sm:text-3xl font-extrabold text-slate-900">
                   {inventory.length}
                 </div>
-                <div className="text-[10px] text-indigo-300/80 mt-1 font-medium">
+                <div className="text-[11px] text-indigo-700 mt-1 font-semibold">
                   Food, Apparel, Medicine
                 </div>
               </div>
 
-              <div className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60">
-                <div className="flex items-center gap-2 text-slate-400 text-xs mb-1">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+              <div className="bg-white p-4 rounded-xl border border-sky-100 shadow-xs">
+                <div className="flex items-center gap-2 text-slate-500 text-xs mb-1 font-medium">
+                  <Sparkles className="w-4 h-4 text-amber-500" />
                   <span>AI Model Pipeline</span>
                 </div>
-                <div className="text-xl sm:text-2xl font-extrabold text-white">
+                <div className="text-xl sm:text-2xl font-extrabold text-slate-900">
                   Active
                 </div>
-                <div className="text-[10px] text-amber-300/80 mt-1 font-medium">
+                <div className="text-[11px] text-amber-700 mt-1 font-semibold">
                   Dynamic Census Driven
                 </div>
               </div>
             </div>
 
-            <div className="pt-2 text-center sm:text-left text-[11px] text-slate-400 flex items-center justify-between">
+            <div className="pt-2 text-center sm:text-left text-[11px] text-slate-500 flex items-center justify-between">
               <span>Encrypted via Supabase Postgres RLS</span>
-              <Link href="/dashboard" className="text-teal-400 hover:text-teal-300 font-semibold underline">
+              <Link href="/dashboard" className="text-sky-700 hover:text-sky-800 font-bold underline">
                 View Full Audit Dashboard &rarr;
               </Link>
             </div>
