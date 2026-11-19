@@ -107,7 +107,7 @@ export function HeroSection() {
                 
                 {/* Child Care Showcase Card */}
                 <div className="group relative rounded-2xl overflow-hidden shadow-lg shadow-slate-900/10 border border-slate-200 bg-white transition-all hover:shadow-xl hover:translate-y-[-2px]">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100" style={{ position: "relative" }}>
                     <Image
                       src="/images/child-care.jpg"
                       alt="Caregiver supporting and engaging with a young child with art and educational supplies in an orphanage home"
@@ -139,7 +139,7 @@ export function HeroSection() {
 
                 {/* Elderly Care Showcase Card */}
                 <div className="group relative rounded-2xl overflow-hidden shadow-lg shadow-slate-900/10 border border-slate-200 bg-white transition-all hover:shadow-xl hover:translate-y-[-2px]">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100" style={{ position: "relative" }}>
                     <Image
                       src="/images/elderly-care.jpg"
                       alt="Healthcare volunteer providing warm, dignified companionship to a senior resident in a senior living care facility"

@@ -80,7 +80,7 @@ export function HeroCarousel() {
               </div>
 
               {/* Multi-generational Welfare Photo */}
-              <div className="relative aspect-[16/9] w-full">
+              <div className="relative aspect-[16/9] w-full" style={{ position: "relative" }}>
                 <Image
                   src="/images/ai-welfare-hero.jpg"
                   alt="Young Indian girl happily hugging her grandmother alongside a caring healthcare nurse supporting an elderly grandfather"
