@@ -80,13 +80,14 @@ export function HeroCarousel() {
               </div>
 
               {/* Multi-generational Welfare Photo */}
-              <div className="relative aspect-[16/9] w-full" style={{ position: "relative" }}>
+              <div className="relative w-full overflow-hidden">
                 <Image
                   src="/images/ai-welfare-hero.jpg"
                   alt="Young Indian girl happily hugging her grandmother alongside a caring healthcare nurse supporting an elderly grandfather"
-                  fill
+                  width={1200}
+                  height={675}
                   priority
-                  className="object-cover object-center"
+                  className="w-full h-auto object-cover object-center"
                   sizes="(max-width: 1024px) 100vw, 650px"
                 />
               </div>

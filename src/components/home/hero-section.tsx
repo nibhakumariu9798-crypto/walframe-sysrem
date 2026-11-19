@@ -107,13 +107,14 @@ export function HeroSection() {
                 
                 {/* Child Care Showcase Card */}
                 <div className="group relative rounded-2xl overflow-hidden shadow-lg shadow-slate-900/10 border border-slate-200 bg-white transition-all hover:shadow-xl hover:translate-y-[-2px]">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100" style={{ position: "relative" }}>
+                  <div className="relative aspect-[4/3] w-full min-h-[200px] overflow-hidden bg-slate-100" style={{ position: "relative" }}>
                     <Image
                       src="/images/child-care.jpg"
                       alt="Caregiver supporting and engaging with a young child with art and educational supplies in an orphanage home"
-                      fill
+                      width={600}
+                      height={450}
                       priority
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, 300px"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
@@ -139,13 +140,14 @@ export function HeroSection() {
 
                 {/* Elderly Care Showcase Card */}
                 <div className="group relative rounded-2xl overflow-hidden shadow-lg shadow-slate-900/10 border border-slate-200 bg-white transition-all hover:shadow-xl hover:translate-y-[-2px]">
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100" style={{ position: "relative" }}>
+                  <div className="relative aspect-[4/3] w-full min-h-[200px] overflow-hidden bg-slate-100" style={{ position: "relative" }}>
                     <Image
                       src="/images/elderly-care.jpg"
                       alt="Healthcare volunteer providing warm, dignified companionship to a senior resident in a senior living care facility"
-                      fill
+                      width={600}
+                      height={450}
                       priority
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       sizes="(max-width: 768px) 100vw, 300px"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent" />
