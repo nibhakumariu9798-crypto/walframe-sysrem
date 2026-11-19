@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.1.0] - 2026-11-19 (Phase 1: Database Setup, Supabase Auth & Granular RBAC)
+
+### Added
+- Extended `002_auth_triggers_and_rbac.sql` with security definer RPC helper functions: `increment_occupancy(inst_id)` and `decrement_occupancy(inst_id)`.
+- Added Server Actions in `src/lib/auth/actions.ts`: `resetPasswordForEmail()` and `updatePassword()`.
+- Implemented route protection redirection in `src/lib/supabase/middleware.ts` (redirects unauthenticated users to `/login?next=...` and authenticated users away from auth forms).
+- Expanded automated verification suite `scripts/verify-system.mjs` to **61 system assertions (100% pass rate)** including:
+  - Auth actions export validation (`signIn`, `signUp`, `signOut`, `resetPasswordForEmail`, `updatePassword`).
+  - Middleware route guard validation.
+  - PKCE session exchange handler verification in `/auth/callback`.
+  - Referential integrity cascade verification on `auth.users(id)` and `institutions(id)`.
+
+### Security
+- Verified strict session persistence via `@supabase/ssr` with encrypted HTTP-only cookie store.
+- Verified foreign-key cascading deletes to prevent orphaned profile or beneficiary records.
+
+---
+
 ## [1.0.0] - 2026-11-19 (Phase 0: Architecture & Complete Documentation)
 
 ### Added

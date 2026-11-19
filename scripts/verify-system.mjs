@@ -75,6 +75,12 @@ assert(rbacContent.includes("current_user_role"), "RBAC helper function 'current
 assert(rbacContent.includes("is_admin_or_gov"), "RBAC helper function 'is_admin_or_gov' declared");
 assert(rbacContent.includes("is_doctor_for_institution"), "RBAC helper function 'is_doctor_for_institution' declared");
 assert(rbacContent.includes("handle_new_user"), "Auth trigger 'handle_new_user' declared");
+assert(rbacContent.includes("increment_occupancy"), "RPC helper function 'increment_occupancy' declared");
+assert(rbacContent.includes("decrement_occupancy"), "RPC helper function 'decrement_occupancy' declared");
+
+// Verify 001 referential integrity cascades
+assert(schemaContent.includes("references auth.users(id) on delete cascade"), "profiles table cascades on auth.users deletion");
+assert(schemaContent.includes("references institutions(id) on delete cascade"), "beneficiaries & inventory cascade on institution deletion");
 
 // Verify 003 contains seed data
 const seedContent = fs.readFileSync(migration003Path, "utf-8");
@@ -156,6 +162,32 @@ const researchPagePath = path.join(rootDir, "src", "app", "research", "page.tsx"
 const researchContent = fs.readFileSync(researchPagePath, "utf-8");
 assert(researchContent.includes("exportProtocol"), "Research workspace includes formal protocol export");
 assert(researchContent.includes("Rule 4 &amp; 16"), "Research workspace cites mandatory Academic Integrity Rules");
+
+// -------------------------------------------------------------
+// Test Suite 5: Phase 1 — Supabase Auth & Session Verification
+// -------------------------------------------------------------
+console.log("\n--- 5. Supabase Auth, SSR Session & Middleware ---");
+
+const authActionsPath = path.join(rootDir, "src", "lib", "auth", "actions.ts");
+const authActionsContent = fs.readFileSync(authActionsPath, "utf-8");
+assert(authActionsContent.includes("export async function signIn"), "Auth action 'signIn' declared");
+assert(authActionsContent.includes("export async function signUp"), "Auth action 'signUp' declared");
+assert(authActionsContent.includes("export async function signOut"), "Auth action 'signOut' declared");
+assert(authActionsContent.includes("export async function resetPasswordForEmail"), "Auth action 'resetPasswordForEmail' declared");
+assert(authActionsContent.includes("export async function updatePassword"), "Auth action 'updatePassword' declared");
+
+const middlewareHelperPath = path.join(rootDir, "src", "lib", "supabase", "middleware.ts");
+const middlewareHelperContent = fs.readFileSync(middlewareHelperPath, "utf-8");
+assert(middlewareHelperContent.includes("url.pathname = \"/login\""), "Middleware redirects unauthenticated requests on protected routes to /login");
+assert(middlewareHelperContent.includes("url.pathname = \"/dashboard\""), "Middleware redirects authenticated requests away from /login to /dashboard");
+
+const authCallbackPath = path.join(rootDir, "src", "app", "auth", "callback", "route.ts");
+const authCallbackContent = fs.readFileSync(authCallbackPath, "utf-8");
+assert(authCallbackContent.includes("exchangeCodeForSession"), "Auth callback handler exchanges PKCE code for SSR session");
+
+const serverClientPath = path.join(rootDir, "src", "lib", "supabase", "server.ts");
+const serverClientContent = fs.readFileSync(serverClientPath, "utf-8");
+assert(serverClientContent.includes("createServerClient"), "Server client uses @supabase/ssr createServerClient with cookie handling");
 
 // -------------------------------------------------------------
 // Test Summary

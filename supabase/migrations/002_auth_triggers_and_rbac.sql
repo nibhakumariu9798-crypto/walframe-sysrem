@@ -112,6 +112,28 @@ as $$
   );
 $$;
 
+create or replace function public.increment_occupancy(inst_id uuid)
+returns void
+language sql
+security definer
+as $$
+  update public.institutions
+  set current_occupancy = current_occupancy + 1,
+      updated_at = now()
+  where id = inst_id;
+$$;
+
+create or replace function public.decrement_occupancy(inst_id uuid)
+returns void
+language sql
+security definer
+as $$
+  update public.institutions
+  set current_occupancy = greatest(0, current_occupancy - 1),
+      updated_at = now()
+  where id = inst_id;
+$$;
+
 
 -- 3. GRANULAR ROW LEVEL SECURITY POLICIES
 

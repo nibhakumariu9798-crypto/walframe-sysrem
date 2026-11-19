@@ -34,11 +34,38 @@ export async function updateSession(request: NextRequest) {
   });
 
   // IMPORTANT: Avoid calling getUser() inside middleware if keys are invalid,
-  // but if valid, refresh session:
+  // but if valid, refresh session and enforce route protection:
+  const pathname = request.nextUrl.pathname;
+  const isPublicRoute =
+    pathname === "/" ||
+    pathname.startsWith("/login") ||
+    pathname.startsWith("/register") ||
+    pathname.startsWith("/signup") ||
+    pathname.startsWith("/forgot-password") ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/auth");
+
+  let user = null;
   try {
-    await supabase.auth.getUser();
+    const { data } = await supabase.auth.getUser();
+    user = data?.user || null;
   } catch (err) {
     console.error("Middleware Supabase auth error:", err);
+  }
+
+  // Redirect unauthenticated requests on protected routes to login with next return url
+  if (!user && !isPublicRoute) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/login";
+    url.searchParams.set("next", pathname);
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect authenticated requests away from login/register back to dashboard
+  if (user && (pathname === "/login" || pathname === "/register" || pathname === "/signup")) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/dashboard";
+    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;

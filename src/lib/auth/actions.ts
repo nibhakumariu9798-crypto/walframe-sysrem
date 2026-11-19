@@ -99,3 +99,51 @@ export async function signOut(): Promise<void> {
   revalidatePath("/", "layout");
   redirect("/login");
 }
+
+export async function resetPasswordForEmail(
+  prevState: AuthState | null,
+  formData: FormData
+): Promise<AuthState> {
+  const email = (formData.get("email") as string)?.trim();
+  if (!email) {
+    return { error: "Please enter your registered email address." };
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl || supabaseUrl.includes("placeholder")) {
+    return { success: "Password recovery instructions dispatched (Demo Mode)." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.resetPasswordForEmail(email);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: "Password reset link sent to your email inbox." };
+}
+
+export async function updatePassword(
+  prevState: AuthState | null,
+  formData: FormData
+): Promise<AuthState> {
+  const password = formData.get("password") as string;
+  if (!password || password.length < 6) {
+    return { error: "New password must be at least 6 characters long." };
+  }
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  if (!supabaseUrl || supabaseUrl.includes("placeholder")) {
+    return { success: "Password updated successfully (Demo Mode)." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: "Password updated successfully. You may now log in." };
+}
