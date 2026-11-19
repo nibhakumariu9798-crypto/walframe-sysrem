@@ -77,7 +77,19 @@ function LoginForm() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="w-full max-w-md mx-auto space-y-4">
+      <div className="text-center mb-4">
+        <div className="w-12 h-12 rounded-xl bg-sky-700 mx-auto flex items-center justify-center text-white shadow-md mb-2.5">
+          <Shield className="w-6 h-6 text-sky-100" />
+        </div>
+        <h1 className="text-lg font-extrabold text-slate-900 tracking-tight">
+          AI-Driven Smart Welfare System
+        </h1>
+        <p className="text-xs text-slate-500 mt-1 font-medium">
+          Official Sign In &bull; Orphanages &amp; Senior Living Homes
+        </p>
+      </div>
+
       <Card className="bg-white border-slate-200 text-slate-900 shadow-md">
         <CardHeader className="pb-3 text-center">
           <CardTitle className="text-base text-slate-900 font-bold">Sign In to Account</CardTitle>
