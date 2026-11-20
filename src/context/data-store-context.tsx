@@ -367,31 +367,91 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   // --- INVENTORY ACTIONS ---
-  const restockItem = (id: string, addedStock: number) => {
+  const restockItem = async (id: string, addedStock: number) => {
+    const targetItem = inventory.find((i) => i.id === id);
+    const newStock = (targetItem?.current_stock || 0) + addedStock;
+
     setInventory((prev) =>
       prev.map((item) =>
         item.id === id
           ? {
               ...item,
-              current_stock: item.current_stock + addedStock,
+              current_stock: newStock,
               last_restocked_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
             }
           : item
       )
     );
-    logAudit("INVENTORY_RESTOCKED", "inventory_items", id, { addedStock });
+    logAudit("INVENTORY_RESTOCKED", "inventory_items", id, { addedStock, newStock });
+
+    // If item was low stock and is now above threshold, resolve related low stock alerts
+    if (targetItem && newStock >= targetItem.reorder_threshold) {
+      setAlerts((prev) =>
+        prev.map((a) =>
+          a.alert_type === "stock_shortage" &&
+          a.title.toLowerCase().includes(targetItem.item_name.toLowerCase()) &&
+          a.status === "pending_review"
+            ? { ...a, status: "resolved", resolution_notes: `Restocked with +${addedStock} units` }
+            : a
+        )
+      );
+    }
+
+    try {
+      const supabase = createClient();
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+      if (isUUID) {
+        await supabase
+          .from("inventory_items")
+          .update({
+            current_stock: newStock,
+            last_restocked_at: new Date().toISOString(),
+          })
+          .eq("id", id);
+      }
+    } catch (err) {
+      console.warn("Could not sync restock to Supabase:", err);
+    }
   };
 
-  const addInventoryItem = (data: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => {
+  const addInventoryItem = async (data: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => {
+    const tempId = `inv-${Date.now()}`;
     const newItem: InventoryItem = {
       ...data,
-      id: `inv-${Date.now()}`,
+      id: tempId,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
     setInventory((prev) => [newItem, ...prev]);
     logAudit("INVENTORY_ITEM_CREATED", "inventory_items", newItem.id, { name: newItem.item_name });
+
+    try {
+      const supabase = createClient();
+      const isInstUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(data.institution_id);
+
+      const { data: inserted, error } = await supabase
+        .from("inventory_items")
+        .insert({
+          institution_id: isInstUUID ? data.institution_id : "24af4f81-d923-49a2-84f6-703c1b193827",
+          category: data.category,
+          item_name: data.item_name,
+          current_stock: data.current_stock,
+          unit: data.unit,
+          reorder_threshold: data.reorder_threshold,
+          last_restocked_at: data.last_restocked_at || new Date().toISOString(),
+        })
+        .select()
+        .single();
+
+      if (!error && inserted) {
+        setInventory((prev) =>
+          prev.map((i) => (i.id === tempId ? (inserted as InventoryItem) : i))
+        );
+      }
+    } catch (err) {
+      console.warn("Failed to persist inventory item to Supabase:", err);
+    }
   };
 
   // --- DONATION ACTIONS ---
@@ -442,7 +502,7 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateDonationStatus = (
+  const updateDonationStatus = async (
     id: string,
     status: "pledged" | "received" | "allocated" | "utilized"
   ) => {
@@ -450,6 +510,16 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
       prev.map((don) => (don.id === id ? { ...don, status } : don))
     );
     logAudit("DONATION_STATUS_UPDATED", "donations", id, { status });
+
+    try {
+      const supabase = createClient();
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+      if (isUUID) {
+        await supabase.from("donations").update({ status }).eq("id", id);
+      }
+    } catch (err) {
+      console.warn("Could not sync donation status to Supabase:", err);
+    }
   };
 
   // --- ALERT ACTIONS ---
