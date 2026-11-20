@@ -10,6 +10,7 @@ import {
   AuditLog,
   ResourceRecord,
   Prediction,
+  MedicalRecord,
 } from "@/types";
 import { useRole } from "./role-context";
 import { createClient } from "@/lib/supabase/client";
@@ -21,11 +22,13 @@ import {
   DEMO_ALERTS,
   DEMO_PREDICTIONS,
   DEMO_RESOURCE_RECORDS,
+  DEMO_MEDICAL_RECORDS,
 } from "@/lib/demo-data";
 
 interface DataStoreContextType {
   institutions: Institution[];
   beneficiaries: Beneficiary[];
+  medicalRecords: MedicalRecord[];
   inventory: InventoryItem[];
   donations: Donation[];
   alerts: Alert[];
@@ -39,6 +42,8 @@ interface DataStoreContextType {
   // Beneficiaries
   addBeneficiary: (ben: Omit<Beneficiary, "id" | "created_at" | "updated_at">) => void;
   updateBeneficiaryStatus: (id: string, status: "active" | "transferred" | "discharged") => void;
+  // Medical Records (Phase 5 Clinical Vault)
+  addMedicalRecord: (record: Omit<MedicalRecord, "id" | "created_at" | "bmi">) => void;
   // Inventory
   restockItem: (id: string, addedStock: number) => void;
   addInventoryItem: (item: Omit<InventoryItem, "id" | "created_at" | "updated_at">) => void;
@@ -59,6 +64,7 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
 
   const [institutions, setInstitutions] = useState<Institution[]>(DEMO_INSTITUTIONS);
   const [beneficiaries, setBeneficiaries] = useState<Beneficiary[]>(DEMO_BENEFICIARIES);
+  const [medicalRecords, setMedicalRecords] = useState<MedicalRecord[]>(DEMO_MEDICAL_RECORDS);
   const [inventory, setInventory] = useState<InventoryItem[]>(DEMO_INVENTORY);
   const [donations, setDonations] = useState<Donation[]>(DEMO_DONATIONS);
   const [alerts, setAlerts] = useState<Alert[]>(DEMO_ALERTS);
@@ -149,6 +155,16 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
 
       if (predData && predData.length > 0) {
         setPredictions(predData as Prediction[]);
+      }
+
+      // 9. Fetch real medical records from Supabase
+      const { data: medData } = await supabase
+        .from("medical_records")
+        .select("*")
+        .order("measurement_date", { ascending: false });
+
+      if (medData && medData.length > 0) {
+        setMedicalRecords(medData as MedicalRecord[]);
       }
     } catch (err) {
       console.warn("Could not fetch real Supabase data, using verified synthetic demo baseline:", err);
@@ -363,6 +379,70 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
       }
     } catch (err) {
       console.warn("Could not sync beneficiary status to Supabase:", err);
+    }
+  };
+
+  // --- MEDICAL RECORDS (PHASE 5 CLINICAL VAULT) ---
+  const addMedicalRecord = async (data: Omit<MedicalRecord, "id" | "created_at" | "bmi">) => {
+    const tempId = `med-${Date.now()}`;
+    let calculatedBmi: number | null = null;
+    if (data.weight_kg && data.height_cm && data.height_cm > 0) {
+      const heightM = data.height_cm / 100;
+      calculatedBmi = Number((data.weight_kg / (heightM * heightM)).toFixed(1));
+    }
+
+    const newRecord: MedicalRecord = {
+      ...data,
+      id: tempId,
+      bmi: calculatedBmi,
+      created_at: new Date().toISOString(),
+    };
+    setMedicalRecords((prev) => [newRecord, ...prev]);
+    logAudit("CLINICAL_RECORD_LOGGED", "medical_records", newRecord.id, {
+      beneficiary_id: data.beneficiary_id,
+      systolic_bp: data.systolic_bp,
+      blood_sugar_fasting: data.blood_sugar_fasting,
+      bmi: calculatedBmi,
+    });
+
+    try {
+      const supabase = createClient();
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        data.beneficiary_id
+      );
+      if (isUUID) {
+        const { data: inserted, error } = await supabase
+          .from("medical_records")
+          .insert({
+            beneficiary_id: data.beneficiary_id,
+            recorded_by: /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+              currentProfile.id || ""
+            )
+              ? currentProfile.id
+              : null,
+            measurement_date: data.measurement_date || new Date().toISOString(),
+            systolic_bp: data.systolic_bp,
+            diastolic_bp: data.diastolic_bp,
+            blood_sugar_fasting: data.blood_sugar_fasting,
+            weight_kg: data.weight_kg,
+            height_cm: data.height_cm,
+            chronic_diseases: data.chronic_diseases || [],
+            current_medications: data.current_medications || [],
+            mobility_status: data.mobility_status,
+            doctor_notes: data.doctor_notes,
+            is_synthetic: data.is_synthetic ?? true,
+          })
+          .select()
+          .single();
+
+        if (!error && inserted) {
+          setMedicalRecords((prev) =>
+            prev.map((m) => (m.id === tempId ? (inserted as MedicalRecord) : m))
+          );
+        }
+      }
+    } catch (err) {
+      console.warn("Failed to persist medical record to Supabase:", err);
     }
   };
 
@@ -620,6 +700,7 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
       value={{
         institutions,
         beneficiaries,
+        medicalRecords,
         inventory,
         donations,
         alerts,
@@ -631,6 +712,7 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
         updateInstitutionStatus,
         addBeneficiary,
         updateBeneficiaryStatus,
+        addMedicalRecord,
         restockItem,
         addInventoryItem,
         addDonation,

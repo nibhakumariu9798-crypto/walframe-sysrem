@@ -56,8 +56,8 @@ flowchart LR
 
     classDef done fill:#dcfce7,stroke:#16a34a,stroke-width:2px;
     classDef next fill:#e0f2fe,stroke:#0284c7,stroke-width:2px;
-    class P0,P1,P2 done;
-    class P3 next;
+    class P0,P1,P2,P3,P4,P5 done;
+    class P6 next;
 ```
 
 ### Phase 0: Build Foundation & Runtime Stability (COMPLETED & VERIFIED)
@@ -82,33 +82,34 @@ flowchart LR
   - Automatic bed capacity synchronization: Admitting a resident increments occupancy; transferring or discharging decrements occupancy.
 - **Acceptance Criteria:** Real-time database persistence to Supabase `institutions` and `beneficiaries` tables.
 
-### Phase 3: Logistics, Resources & Donation Tracking (NEXT PHASE)
+### Phase 3: Logistics, Resources & Donation Tracking (COMPLETED & VERIFIED)
 - **Goal:** Deliver real-time inventory management and transparent donor contribution reconciliation.
 - **Deliverables:**
-  - `/resources`: Multi-category inventory ledger (Food Grains, Clothing, Medicines, Hygiene).
+  - `/resources`: Multi-category inventory ledger (Food Grains, Clothing, Medicines, Hygiene) with dual Table Ledger & Grid views, high contrast typography, and instant CSV export.
   - Automated low-stock warning alerts triggered when stock falls below reorder thresholds.
   - `/donations`: Verified contribution logging with unique receipt numbers, allocation tracking, and lifecycle status transitions (`pledged` $\to$ `received` $\to$ `allocated` $\to$ `utilized`).
 - **Acceptance Criteria:** Restocking items updates current stock and clears active inventory deficit alerts.
 
-### Phase 4: Machine Learning Demand Forecasting Engine
+### Phase 4: Machine Learning Demand Forecasting Engine (COMPLETED & VERIFIED)
 - **Goal:** Deliver proactive resource procurement forecasts driven by resident census and seasonal data.
 - **Deliverables:**
   - Dual-mode AI adapter: deterministic local heuristic baseline (`DemoAIAdapter`) and external Python ML microservice (`RemoteAIAdapter` via FastAPI).
   - Regression inference predicting next-month Food (kg), Clothing (units), Medicine (units), and Operational Budget (₹).
+  - `/predictions`: Interactive forecast simulation modal (`SimulateForecastModal`) with census sliders, seasonal flags, Model Architecture Registry, and CSV export.
   - Prediction audit logging into the immutable `predictions` table.
 - **Acceptance Criteria:** Graceful fallback to local heuristic if remote microservice is offline, with explicit synthetic labeling.
 
-### Phase 5: Deep Learning Clinical Health-Risk Triage & Medical Vault
+### Phase 5: Deep Learning Clinical Health-Risk Triage & Medical Vault (COMPLETED & VERIFIED)
 - **Goal:** Protect vulnerable resident health through early clinical prioritization.
 - **Deliverables:**
-  - `/health`: Doctor-only clinical review vault with vitals logging (blood pressure, fasting sugar, BMI, chronic illnesses).
+  - `/health`: Doctor-only clinical review vault with vitals logging modal (`RecordVitalsModal`) for systolic/diastolic BP, fasting blood sugar, weight, height, and live BMI computation.
   - 0–100 Composite Welfare Priority Score calculation:
     $$P = w_a A_{norm} + w_r R_{norm} + w_c C_{norm} + w_m M_{norm}$$
   - Automated high-severity alert dispatch whenever Priority Score $P \ge 70$.
-  - SHAP factor contribution explainability drawer.
+  - SHAP factor contribution explainability waterfall breakdown.
 - **Acceptance Criteria:** Strict RLS enforcement preventing non-physicians from reading sensitive medical vitals.
 
-### Phase 6: Operational Dashboards, Document Reporting & Alerts
+### Phase 6: Operational Dashboards, Document Reporting & Alerts (NEXT PHASE)
 - **Goal:** Provide tailored operational views for all 7 stakeholders and structured document exports.
 - **Deliverables:**
   - Role-specific dashboard layouts in `role-dashboard.tsx`.
