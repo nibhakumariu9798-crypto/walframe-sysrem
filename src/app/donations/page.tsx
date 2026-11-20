@@ -93,71 +93,92 @@ export default function DonationsPage() {
         </Button>
       </div>
 
-      {/* 4 Top KPI Cards with Colored Top Borders */}
+      {/* 4 Top KPI Cards with Clean Enterprise Left Accents */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* KPI 1: Total Contributions */}
-        <div className="bg-white rounded-xl border border-slate-200 border-t-4 border-t-[#10b981] p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-slate-200/90 border-l-4 border-l-emerald-600 p-4 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               Total Contributions
             </span>
-            <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
-              <HeartHandshake className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center">
+              <HeartHandshake className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 mt-2">{totalDonations} Grants</div>
-          <div className="text-[11px] font-medium text-emerald-700 mt-1">
-            Verified Receipts Issued
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl font-black text-slate-900">{totalDonations}</span>
+            <span className="text-xs font-bold text-slate-500">Grants Issued</span>
+          </div>
+          <div className="text-[11px] font-medium text-slate-500 mt-1 flex items-center justify-between">
+            <span>Verified Receipts</span>
+            <span className="text-emerald-700 font-semibold text-[10px] bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-100">
+              Audited
+            </span>
           </div>
         </div>
 
         {/* KPI 2: Total Funds Mobilized */}
-        <div className="bg-white rounded-xl border border-slate-200 border-t-4 border-t-[#0284c7] p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-slate-200/90 border-l-4 border-l-sky-600 p-4 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               Monetary Funds
             </span>
-            <div className="w-7 h-7 rounded-lg bg-sky-50 flex items-center justify-center text-sky-600">
-              <IndianRupee className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-700 border border-sky-100 flex items-center justify-center">
+              <IndianRupee className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 mt-2">
-            {formatCurrency(totalMonetary)}
+          <div className="mt-2">
+            <span className="text-2xl font-black text-slate-900">{formatCurrency(totalMonetary)}</span>
           </div>
-          <div className="text-[11px] font-medium text-sky-700 mt-1">
-            Zero-Leakage Tracking Active
+          <div className="text-[11px] font-medium text-slate-500 mt-1 flex items-center justify-between">
+            <span>Zero-Leakage Tracking</span>
+            <span className="text-sky-700 font-semibold text-[10px] bg-sky-50 px-1.5 py-0.2 rounded border border-sky-100">
+              Active
+            </span>
           </div>
         </div>
 
         {/* KPI 3: In-Kind Provisions */}
-        <div className="bg-white rounded-xl border border-slate-200 border-t-4 border-t-[#4f46e5] p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-slate-200/90 border-l-4 border-l-indigo-600 p-4 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               In-Kind Provisions
             </span>
-            <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
-              <Layers className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center">
+              <Layers className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-indigo-950 mt-2">{totalInKind} Shipments</div>
-          <div className="text-[11px] font-medium text-indigo-700 mt-1">
-            Food Grains, Blankets &amp; Medicine Kits
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl font-black text-slate-900">{totalInKind}</span>
+            <span className="text-xs font-bold text-slate-500">Shipments</span>
+          </div>
+          <div className="text-[11px] font-medium text-slate-500 mt-1 flex items-center justify-between">
+            <span>Food &amp; Medicine Kits</span>
+            <span className="text-indigo-700 font-semibold text-[10px] bg-indigo-50 px-1.5 py-0.2 rounded border border-indigo-100">
+              Allocated
+            </span>
           </div>
         </div>
 
         {/* KPI 4: Active Fund Utilization Rate */}
-        <div className="bg-white rounded-xl border border-slate-200 border-t-4 border-t-[#f59e0b] p-4 shadow-xs">
+        <div className="bg-white rounded-xl border border-slate-200/90 border-l-4 border-l-amber-500 p-4 shadow-xs hover:border-slate-300 transition-all">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
               Disbursed &amp; Utilized
             </span>
-            <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-              <CheckCircle2 className="w-3.5 h-3.5" />
+            <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 border border-amber-100 flex items-center justify-center">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <div className="text-2xl font-black text-slate-900 mt-2">{utilizationRate}%</div>
-          <div className="text-[11px] font-medium text-amber-700 mt-1">
-            {utilizedCount} of {totalDonations} Fully Utilized
+          <div className="flex items-baseline gap-2 mt-2">
+            <span className="text-2xl font-black text-slate-900">{utilizationRate}%</span>
+            <span className="text-xs font-bold text-slate-500">{utilizedCount}/{totalDonations} Fully Used</span>
+          </div>
+          <div className="text-[11px] font-medium text-slate-500 mt-1 flex items-center justify-between">
+            <span>Utilization Efficiency</span>
+            <span className="text-amber-700 font-semibold text-[10px] bg-amber-50 px-1.5 py-0.2 rounded border border-amber-100">
+              Verified
+            </span>
           </div>
         </div>
       </div>
