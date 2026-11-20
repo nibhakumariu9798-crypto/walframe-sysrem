@@ -265,11 +265,18 @@ export default function RegisterPage() {
           authError.message.toLowerCase().includes("already registered") ||
           authError.status === 422
         ) {
-          setError(`An account with ${trimmedEmail} is already registered in Supabase.`);
+          setError(`An account with "${trimmedEmail}" is already registered in your Supabase database.`);
           setLoading(false);
           return;
         }
         throw authError;
+      }
+
+      // Check if user already exists (Supabase email enumeration protection returns empty identities)
+      if (authData?.user && authData.user.identities && authData.user.identities.length === 0) {
+        setError(`An account with "${trimmedEmail}" already exists in Supabase. Please sign in directly.`);
+        setLoading(false);
+        return;
       }
 
       const registeredUserId = authData?.user?.id;
@@ -886,6 +893,43 @@ export default function RegisterPage() {
                       </span>
                     </label>
                   </div>
+
+                  {/* Inline Error Alert Box directly above Submit Button */}
+                  {error && (
+                    <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex flex-col gap-2.5 animate-in fade-in-50">
+                      <div className="flex items-start gap-2.5">
+                        <AlertCircle className="w-5 h-5 flex-shrink-0 text-rose-600 mt-0.5" />
+                        <div>
+                          <span className="font-bold text-sm block text-rose-950">Registration Notice</span>
+                          <span className="font-medium leading-relaxed">{error}</span>
+                        </div>
+                      </div>
+                      {error.toLowerCase().includes("already") && (
+                        <div className="pt-2 flex flex-wrap gap-2 border-t border-rose-200">
+                          <Link href={`/login?email=${encodeURIComponent(email.trim())}`}>
+                            <Button
+                              type="button"
+                              size="sm"
+                              className="bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs py-1.5 px-3.5 rounded-lg shadow-xs cursor-pointer flex items-center gap-1.5"
+                            >
+                              <span>Sign In with this Account</span>
+                              <ArrowRight className="w-3.5 h-3.5" />
+                            </Button>
+                          </Link>
+                          <Link href="/forgot-password">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="text-xs py-1.5 px-3 rounded-lg border-rose-300 text-rose-900 hover:bg-rose-100/60 cursor-pointer"
+                            >
+                              Reset Password
+                            </Button>
+                          </Link>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Submit Button */}
                   <Button
