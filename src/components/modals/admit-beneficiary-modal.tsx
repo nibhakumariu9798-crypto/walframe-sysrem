@@ -27,7 +27,7 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
     e.preventDefault();
     if (!firstName || !institutionId) return;
 
-    // Generate random privacy code
+    // Generate compliant privacy code
     const prefix = type === "child" ? "BEN-CH" : "BEN-ELD";
     const rand = Math.floor(100 + Math.random() * 900);
     const identifierCode = `${prefix}-2026-${rand}`;
@@ -48,18 +48,18 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-      <div className="bg-white border border-slate-200 rounded-xl shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between p-5 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4 animate-in fade-in-50">
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center text-indigo-700">
               <UserPlus className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-bold text-slate-900">
                 Admit Resident to Care Home
               </h2>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 font-medium">
                 Enroll a child or senior resident with privacy protections
               </p>
             </div>
@@ -74,13 +74,13 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4 text-xs">
           <div className="space-y-1">
-            <label className="font-semibold text-slate-700 dark:text-slate-300">
-              Host Welfare Institution
+            <label className="font-semibold text-slate-700">
+              Host Welfare Institution *
             </label>
             <select
               value={institutionId}
               onChange={(e) => setInstitutionId(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition-all"
             >
               {institutions.map((inst) => (
                 <option key={inst.id} value={inst.id}>
@@ -92,8 +92,8 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="font-semibold text-slate-700 dark:text-slate-300">
-                Resident Category
+              <label className="font-semibold text-slate-700">
+                Resident Category *
               </label>
               <select
                 value={type}
@@ -102,7 +102,7 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
                   setType(newType);
                   setAge(newType === "child" ? 8 : 74);
                 }}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition-all"
               >
                 <option value="child">Child Resident</option>
                 <option value="elderly">Elderly Senior</option>
@@ -110,8 +110,8 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
             </div>
 
             <div className="space-y-1">
-              <label className="font-semibold text-slate-700 dark:text-slate-300">
-                Age (Years)
+              <label className="font-semibold text-slate-700">
+                Age (Years) *
               </label>
               <input
                 type="number"
@@ -120,15 +120,15 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
                 required
                 value={age}
                 onChange={(e) => setAge(Number(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="font-semibold text-slate-700 dark:text-slate-300">
-                Given First Name
+              <label className="font-semibold text-slate-700">
+                Given First Name *
               </label>
               <input
                 type="text"
@@ -136,18 +136,18 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
                 placeholder="e.g. Meera"
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
               />
             </div>
 
             <div className="space-y-1">
-              <label className="font-semibold text-slate-700 dark:text-slate-300">
-                Gender
+              <label className="font-semibold text-slate-700">
+                Gender *
               </label>
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value as Gender)}
-                className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-medium transition-all"
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -157,7 +157,7 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
           </div>
 
           <div className="space-y-1">
-            <label className="font-semibold text-slate-700 dark:text-slate-300">
+            <label className="font-semibold text-slate-700">
               Special Care / Dietary Requirements
             </label>
             <textarea
@@ -165,22 +165,22 @@ export function AdmitBeneficiaryModal({ isOpen, onClose }: Props) {
               value={specialNeeds}
               onChange={(e) => setSpecialNeeds(e.target.value)}
               placeholder="e.g. Nutritional milk supplement, gentle mobility assistance..."
-              className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
             />
           </div>
 
-          <div className="p-3 bg-blue-50/60 dark:bg-blue-950/30 rounded-lg border border-blue-200/80 dark:border-blue-900/60 text-[11px] text-blue-900 dark:text-blue-200 flex items-center gap-2">
-            <Shield className="w-4 h-4 text-blue-600 flex-shrink-0" />
+          <div className="p-3 bg-sky-50 rounded-xl border border-sky-200 text-[11px] text-sky-900 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-sky-700 flex-shrink-0" />
             <span>
               A privacy-preserving token ID will be auto-generated. Full clinical records are isolated for physicians.
             </span>
           </div>
 
-          <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
-            <Button type="button" variant="outline" size="sm" onClick={onClose}>
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
+            <Button type="button" variant="outline" size="sm" onClick={onClose} className="border-slate-300">
               Cancel
             </Button>
-            <Button type="submit" size="sm">
+            <Button type="submit" size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
               <UserPlus className="w-3.5 h-3.5 mr-1" /> Complete Admission
             </Button>
           </div>

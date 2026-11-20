@@ -232,11 +232,21 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updateInstitutionStatus = (id: string, status: "verified" | "rejected" | "pending") => {
+  const updateInstitutionStatus = async (id: string, status: "verified" | "rejected" | "pending") => {
     setInstitutions((prev) =>
       prev.map((inst) => (inst.id === id ? { ...inst, verification_status: status } : inst))
     );
     logAudit("INSTITUTION_STATUS_UPDATED", "institutions", id, { status });
+
+    try {
+      const supabase = createClient();
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+      if (isUUID) {
+        await supabase.from("institutions").update({ verification_status: status }).eq("id", id);
+      }
+    } catch (err) {
+      console.warn("Could not sync institution status to Supabase:", err);
+    }
   };
 
   // --- BENEFICIARY ACTIONS ---
@@ -283,17 +293,77 @@ export function DataStoreProvider({ children }: { children: React.ReactNode }) {
         setBeneficiaries((prev) =>
           prev.map((b) => (b.id === tempId ? (inserted as Beneficiary) : b))
         );
+        // Sync increment occupancy in Supabase
+        if (isUUID) {
+          const targetInst = institutions.find((i) => i.id === data.institution_id);
+          if (targetInst) {
+            await supabase
+              .from("institutions")
+              .update({ current_occupancy: targetInst.current_occupancy + 1 })
+              .eq("id", data.institution_id);
+          }
+        }
       }
     } catch (err) {
       console.warn("Failed to persist beneficiary to Supabase:", err);
     }
   };
 
-  const updateBeneficiaryStatus = (id: string, status: "active" | "transferred" | "discharged") => {
+  const updateBeneficiaryStatus = async (id: string, status: "active" | "transferred" | "discharged") => {
+    const currentBen = beneficiaries.find((b) => b.id === id);
+    const oldStatus = currentBen?.status;
+
     setBeneficiaries((prev) =>
       prev.map((ben) => (ben.id === id ? { ...ben, status } : ben))
     );
-    logAudit("BENEFICIARY_STATUS_CHANGED", "beneficiaries", id, { status });
+
+    // Adjust care home bed occupancy accordingly
+    if (oldStatus === "active" && status !== "active" && currentBen?.institution_id) {
+      setInstitutions((prev) =>
+        prev.map((inst) =>
+          inst.id === currentBen.institution_id
+            ? { ...inst, current_occupancy: Math.max(0, inst.current_occupancy - 1) }
+            : inst
+        )
+      );
+    } else if (oldStatus !== "active" && status === "active" && currentBen?.institution_id) {
+      setInstitutions((prev) =>
+        prev.map((inst) =>
+          inst.id === currentBen.institution_id
+            ? { ...inst, current_occupancy: inst.current_occupancy + 1 }
+            : inst
+        )
+      );
+    }
+
+    logAudit("BENEFICIARY_STATUS_CHANGED", "beneficiaries", id, { oldStatus, newStatus: status });
+
+    try {
+      const supabase = createClient();
+      const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id);
+      if (isUUID) {
+        await supabase.from("beneficiaries").update({ status }).eq("id", id);
+
+        // Also sync updated occupancy to institutions table
+        if (currentBen?.institution_id) {
+          const instUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(currentBen.institution_id);
+          if (instUUID) {
+            const inst = institutions.find((i) => i.id === currentBen.institution_id);
+            if (inst) {
+              const delta = (oldStatus === "active" && status !== "active") ? -1 : (oldStatus !== "active" && status === "active") ? 1 : 0;
+              if (delta !== 0) {
+                await supabase
+                  .from("institutions")
+                  .update({ current_occupancy: Math.max(0, inst.current_occupancy + delta) })
+                  .eq("id", currentBen.institution_id);
+              }
+            }
+          }
+        }
+      }
+    } catch (err) {
+      console.warn("Could not sync beneficiary status to Supabase:", err);
+    }
   };
 
   // --- INVENTORY ACTIONS ---
