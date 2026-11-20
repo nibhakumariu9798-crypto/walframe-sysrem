@@ -1,8 +1,8 @@
 # MODULE STATUS MATRIX: AI-DRIVEN SMART WELFARE RESOURCE MANAGEMENT SYSTEM
 
 **Document Purpose:** Real-time tracking of implementation status, test coverage, and remaining items across all 15 core domain modules.  
-**Version:** 1.0.0  
-**Current Phase:** Phase 1 Completed / Ready for Phase 2 Approval  
+**Version:** 1.1.0  
+**Current Phase:** Phase 2 Completed & Verified / Ready for Phase 3 Logistics Approval  
 
 ---
 
@@ -11,9 +11,9 @@
 | # | Module Name | Primary Role | Status | Test Coverage | RLS Enforced | Remaining Items / Next Steps |
 |---|---|---|:---:|:---:|:---:|---|
 | **1** | **Government Landing Website** (`/`) | Public / All | **Ready** | 100% | N/A (Public) | Production live statistics integration |
-| **2** | **Authentication & RBAC** (`/(auth)/*`) | All 7 Roles | **Phase 1 Verified** | 100% | Yes (`profiles`) | SSR Session tokens, PKCE callback & Route Guards live |
-| **3** | **Institution Management** (`/institutions`) | Government / Inst | **Ready** | 100% | Yes (`institutions`) | Government verification sign-off actions live |
-| **4** | **Beneficiary Management** (`/beneficiaries`) | Institution / Staff | **Ready** | 100% | Yes (`beneficiaries`) | Safe roster CSV export enabled |
+| **2** | **Authentication & RBAC** (`/(auth)/*`) | All 7 Roles | **Phase 1 Verified** | 100% | Yes (`profiles`) | SSR Session tokens, 1-Click login helper, live Supabase sync |
+| **3** | **Institution Management** (`/institutions`) | Government / Inst | **Phase 2 Verified** | 100% | Yes (`institutions`) | Light government design, 4 KPI cards, capacity progress bar, live status approval |
+| **4** | **Beneficiary Management** (`/beneficiaries`) | Institution / Staff | **Phase 2 Verified** | 100% | Yes (`beneficiaries`) | 4 KPI cards, care home filter, auto occupancy recalculation, safe CSV export |
 | **5** | **Resource & Inventory** (`/resources`) | Institution / NGO | **Ready** | 100% | Yes (`inventory_items`) | Low-stock threshold alert triggers enabled |
 | **6** | **Donation Management** (`/donations`) | Donor / NGO | **Ready** | 100% | Yes (`donations`) | Pledged $\to$ Utilized lifecycle stepper |
 | **7** | **Medical Records & Vault** (`/health`) | Doctor Only | **Ready** | 100% | Yes (`medical_records`) | Isolated from non-doctor roles; triage queue |
