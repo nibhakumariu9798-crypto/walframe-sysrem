@@ -6,7 +6,7 @@
 
 ---
 
-## 1. Project Overview & Production Blueprint
+## 1. Project Overview & Architectural Blueprint
 
 This system is an enterprise-grade welfare management platform designed for public-service institutions, care homes, NGOs, physicians, donors, and government ministries. It bridges real-time resource logistics with machine learning demand forecasting and clinical health-risk triage for vulnerable populations.
 
@@ -18,72 +18,131 @@ This system is an enterprise-grade welfare management platform designed for publ
 
 ---
 
-## 2. Phased Implementation Roadmap & Verification Status
+## 2. Canonical System Modules Matrix (Total: 15 Core Modules)
+
+The platform is partitioned into **15 discrete, production-ready domain modules**:
+
+| # | Module Name | Route / Path | Primary Stakeholders | Core Purpose & Technical Functionality |
+|---|---|---|---|---|
+| **1** | **Official Government Portal** | `/` | All Citizens / Public | Bilingual public service landing page compliant with national branding (Ashoka Emblem, Digital India, Ministry of Women & Child Development). |
+| **2** | **Authentication & RBAC** | `/login`, `/register` | All 7 Roles | Supabase Auth with cookie-based SSR sessions, 1-click test credentials, and automated profile provisioning (`handle_new_user`). |
+| **3** | **Institutions Directory** | `/institutions` | Government, Care Home | Care home accreditation registry, dynamic bed capacity progress bars, occupancy rate alerts, and official state verification workflow. |
+| **4** | **Beneficiaries Registry** | `/beneficiaries` | Institution Staff, Admin | Privacy-preserving resident roster (`BEN-CH-...`, `BEN-ELD-...`), admission/discharge workflows, bed occupancy auto-sync, and safe CSV export. |
+| **5** | **Resource & Stock Ledger** | `/resources` | Institution Staff, NGO | Multi-category inventory ledger (Food grains, clothing, essential medicines) with low-stock threshold triggers and instant restock actions. |
+| **6** | **Donation Management** | `/donations` | Donors, NGOs, Admin | Monetary and in-kind donation logging, verified receipt generation, transparent allocation, and lifecycle stepper (`pledged` $\to$ `utilized`). |
+| **7** | **Doctor Vault & Medical Vitals** | `/health` | **Physicians Only** | Clinical measurement queue (systolic/diastolic BP, fasting blood glucose, BMI, medications) strictly isolated under PostgreSQL RLS. |
+| **8** | **AI Demand Forecasting** | `/resources` | Government, Care Home | Machine Learning regression (XGBoost / Random Forest) projecting next-month food (kg), clothing, medicine, and operational budget (₹) quotas. |
+| **9** | **Deep Learning Health Triage** | `/health` | Physicians Only | Multi-factor clinical triage heuristics; computes 0–100 Welfare Priority Score; dispatches instant alert when Priority Score $\ge 70$. |
+| **10** | **AI Predictions & SHAP Workspace** | `/predictions` | Staff, Researchers | Interactive simulation lab with model execution triggers, domain filtering, and expandable SHAP factor contribution drawers. |
+| **11** | **Research Evaluation Lab** | `/research` | Researchers, Admin | Empirical algorithm comparison (Linear Regression vs Random Forest vs XGBoost) enforcing strict academic integrity (no fabricated metrics). |
+| **12** | **Reports & Document Export** | `/reports` | All Stakeholders | Structured document generation engine exporting audit summaries, inventory ledgers, and safe resident rosters to CSV format. |
+| **13** | **Alerts & Notification Desk** | `/notifications` | All Stakeholders | Real-time notification center for critical stock shortages, clinical vitals spikes, and state accreditation reviews with acknowledgment workflows. |
+| **14** | **System & Priority Settings** | `/settings` | Admin, Doctors | Customization of Priority Score formula weights (age vulnerability, DL risk, chronic diseases, medication count) and alert thresholds. |
+| **15** | **PostgreSQL Audit Logging** | Database Triggers | Admin, Auditors | Tamper-proof, immutable audit ledger tracking actor identity, event timestamp, action type, IP address, and JSON diffs across all entities. |
+
+---
+
+## 3. Phased Implementation Roadmap & Deliverables (Total: 8 Phases)
 
 ```mermaid
 flowchart LR
     P0["Phase 0<br/>Foundation"] --> P1["Phase 1<br/>Identity & RBAC"]
-    P1 --> P2["Phase 2<br/>Operational Data"]
-    P2 --> P3["Phase 3<br/>Medical Triage"]
-    P3 --> P4["Phase 4<br/>AI Adapters"]
-    P4 --> P5["Phase 5<br/>Research Lab"]
+    P1 --> P2["Phase 2<br/>Care Homes & Residents"]
+    P2 --> P3["Phase 3<br/>Stock & Donations"]
+    P3 --> P4["Phase 4<br/>AI Demand Forecasting"]
+    P4 --> P5["Phase 5<br/>Clinical DL Triage"]
     P5 --> P6["Phase 6<br/>Reports & Alerts"]
-    P6 --> P7["Phase 7<br/>Production Ready"]
+    P6 --> P7["Phase 7<br/>E2E Hardening"]
 
     classDef done fill:#dcfce7,stroke:#16a34a,stroke-width:2px;
-    class P0,P1,P2,P3,P4,P5,P6,P7 done;
+    classDef next fill:#e0f2fe,stroke:#0284c7,stroke-width:2px;
+    class P0,P1,P2 done;
+    class P3 next;
 ```
 
-### Phase 0: Build Foundation & Runtime Stability (VERIFIED)
-- [x] Streamlined Next.js 16 and Turbopack compiler settings in `next.config.ts`.
-- [x] Decoupled network-dependent font downloads in `src/app/layout.tsx` to enable zero-network build resilience.
-- [x] Verified full production static optimization across all 21 routes with `npm run build` exiting code 0.
+### Phase 0: Build Foundation & Runtime Stability (COMPLETED & VERIFIED)
+- **Goal:** Establish zero-network build resilience and stable compilation environment.
+- **Deliverables:** Next.js 16 App Router configuration, Webpack compiler fallback for Windows IPC stability, decoupled font assets, and static bundle optimization across all routes.
+- **Acceptance Criteria:** `npm run build` exits code 0 with zero static generation errors.
 
-### Phase 1: Identity, RBAC & Profile Management (VERIFIED)
-- [x] 7 discrete stakeholder perspectives: Government, Institution, NGO, Doctor, Donor, Volunteer, and Admin.
-- [x] Supabase Auth actions in `src/lib/auth/actions.ts` supporting signup, signin, signout, password recovery.
-- [x] Security Definer helper functions and RLS policies in `supabase/migrations/001_initial_schema.sql` and `002_auth_triggers_and_rbac.sql`.
-- [x] `RoleProvider` in `src/context/role-context.tsx` with perspective switcher for demonstrations.
+### Phase 1: Identity, Supabase Auth & 7-Role RBAC (COMPLETED & VERIFIED)
+- **Goal:** Provision user authentication and role-based access control backed by live Supabase.
+- **Deliverables:**
+  - Supabase Auth integration supporting signup, login, session cookies, and password recovery.
+  - Granular Row Level Security (RLS) policies on `profiles` and `institutions`.
+  - 1-Click quick-fill login helpers for key roles (including Donor account `ng829353@gmail.com`).
+  - Automatic whitespace normalization and password synchronization.
+- **Acceptance Criteria:** Verified live authentication against Supabase Auth with zero authorization bypasses.
 
-### Phase 2: Core Operational Data Modules (VERIFIED)
-- [x] **Institutions (`/institutions`):** Registration, capacity tracking, occupancy metrics, district/state filtering, verification workflow.
-- [x] **Beneficiaries (`/beneficiaries`):** Non-identifying enrollment of children and elderly residents with privacy guarantees.
-- [x] **Inventory & Stock (`/resources`):** Real-time stock tracking for food, medicine, and clothing with reorder threshold alerts and instant restock actions.
-- [x] **Donations (`/donations`):** Monetary and in-kind tracking with receipt generation, status transitions (`pledged`, `received`, `allocated`, `utilized`), and public transparency.
+### Phase 2: Core Institutional & Beneficiary Management (COMPLETED & VERIFIED)
+- **Goal:** Implement the primary operational entities: Care Homes and Residents.
+- **Deliverables:**
+  - `/institutions`: Facility directory, bed capacity progress bars, occupancy rate calculations, and Government State Verification actions (`verified` / `rejected`).
+  - `/beneficiaries`: Privacy-preserving resident registry, admission modal with compliant `BEN-CH-...` / `BEN-ELD-...` generator, and safe CSV export.
+  - Automatic bed capacity synchronization: Admitting a resident increments occupancy; transferring or discharging decrements occupancy.
+- **Acceptance Criteria:** Real-time database persistence to Supabase `institutions` and `beneficiaries` tables.
 
-### Phase 3: Medical Records & Clinical Decision Triage (VERIFIED)
-- [x] Strictly isolated medical vitals in `medical_records` (blood pressure, fasting blood sugar, weight, height, BMI, chronic diseases, medication regimen).
-- [x] Clinical triage queue in `src/app/health/page.tsx` with mandatory medical safety disclaimer.
-- [x] Automatic calculation of the 0–100 Welfare Priority Score heuristic (Age vulnerability, DL clinical risk, Chronic illness, Medication dependency).
-- [x] Automated alert creation and notification dispatch when priority score exceeds the doctor alert threshold ($\ge 70$).
+### Phase 3: Logistics, Resources & Donation Tracking (NEXT PHASE)
+- **Goal:** Deliver real-time inventory management and transparent donor contribution reconciliation.
+- **Deliverables:**
+  - `/resources`: Multi-category inventory ledger (Food Grains, Clothing, Medicines, Hygiene).
+  - Automated low-stock warning alerts triggered when stock falls below reorder thresholds.
+  - `/donations`: Verified contribution logging with unique receipt numbers, allocation tracking, and lifecycle status transitions (`pledged` $\to$ `received` $\to$ `allocated` $\to$ `utilized`).
+- **Acceptance Criteria:** Restocking items updates current stock and clears active inventory deficit alerts.
 
-### Phase 4: Machine Learning Adapters & Prediction Audit Logging (VERIFIED)
-- [x] Typed AI contracts in `src/lib/ai/types.ts` (`ResourceForecastInput`, `HealthRiskInput`, `AIAdapter`).
-- [x] Deterministic local baseline pipeline in `src/lib/ai/demo-adapter.ts` with explicit `is_synthetic: true` labels.
-- [x] End-to-end audit persistence: forecasts run on `/resources` and clinical assessments run on `/health` are logged directly into the immutable `predictions` table.
-- [x] Interactive `/predictions` page with live model execution triggers, domain filtering, and expandable SHAP / input factor drawers.
+### Phase 4: Machine Learning Demand Forecasting Engine
+- **Goal:** Deliver proactive resource procurement forecasts driven by resident census and seasonal data.
+- **Deliverables:**
+  - Dual-mode AI adapter: deterministic local heuristic baseline (`DemoAIAdapter`) and external Python ML microservice (`RemoteAIAdapter` via FastAPI).
+  - Regression inference predicting next-month Food (kg), Clothing (units), Medicine (units), and Operational Budget (₹).
+  - Prediction audit logging into the immutable `predictions` table.
+- **Acceptance Criteria:** Graceful fallback to local heuristic if remote microservice is offline, with explicit synthetic labeling.
 
-### Phase 5: Research & Evaluation Workspace (VERIFIED)
-- [x] Dedicated restricted laboratory area at `/research`.
-- [x] Candidate regression model comparison table (Linear Regression, Random Forest, XGBoost).
-- [x] Candidate classification model comparison table (Logistic Regression, Random Forest, XGBoost, MLP).
-- [x] Research integrity enforcement: all empirical metrics remain labeled `TBD` or `XX.XX` until genuine training runs against curated datasets are conducted.
+### Phase 5: Deep Learning Clinical Health-Risk Triage & Medical Vault
+- **Goal:** Protect vulnerable resident health through early clinical prioritization.
+- **Deliverables:**
+  - `/health`: Doctor-only clinical review vault with vitals logging (blood pressure, fasting sugar, BMI, chronic illnesses).
+  - 0–100 Composite Welfare Priority Score calculation:
+    $$P = w_a A_{norm} + w_r R_{norm} + w_c C_{norm} + w_m M_{norm}$$
+  - Automated high-severity alert dispatch whenever Priority Score $P \ge 70$.
+  - SHAP factor contribution explainability drawer.
+- **Acceptance Criteria:** Strict RLS enforcement preventing non-physicians from reading sensitive medical vitals.
 
-### Phase 6: Reporting Engine & Notifications (VERIFIED)
-- [x] Functional document export engine in `src/app/reports/page.tsx` producing CSV and printable formats.
-- [x] Role-based medical confidentiality checks preventing non-physicians from exporting confidential clinical rosters.
-- [x] Real-time notification and alert management in `src/app/notifications/page.tsx` with batch acknowledgment workflows.
+### Phase 6: Operational Dashboards, Document Reporting & Alerts
+- **Goal:** Provide tailored operational views for all 7 stakeholders and structured document exports.
+- **Deliverables:**
+  - Role-specific dashboard layouts in `role-dashboard.tsx`.
+  - Dynamic CSV reporting engine in `/reports` with physician-only clinical export protection.
+  - Centralized notification center in `/notifications` with alert status filters and batch acknowledgments.
+- **Acceptance Criteria:** Each role views only jurisdiction-authorized data upon login.
 
-### Phase 7: Production Seeding, Parameter Tuning & Hardening (VERIFIED)
-- [x] Turnkey database migration script `supabase/migrations/003_seed_demo_data.sql` populating all 12 tables.
-- [x] Dynamic heuristic weight tuning in `src/app/settings/page.tsx` connected to the AI assessment engine.
-- [x] Complete error boundary, loading, and empty state coverage.
+### Phase 7: Comprehensive Hardening, Academic Verification & Review
+- **Goal:** Ensure 100% production readiness, security compliance, and research integrity.
+- **Deliverables:**
+  - Automated end-to-end verification suite `scripts/verify-system.mjs` (61 / 61 tests passing).
+  - Strict TypeScript check (`npx tsc --noEmit`) with 0 errors.
+  - Academic integrity compliance: no fabricated accuracy, MAE, RMSE, or $R^2$ metrics (clearly marked `TBD` or `XX.XX`).
+- **Acceptance Criteria:** Complete test pass rate, verified reproducible setup, and complete documentation.
 
 ---
 
-## 3. Production Environment & Deployment Runbook
+## 4. Stakeholder Roles & Access Control Matrix (7 Roles)
 
-### 3.1 Environment Configuration (`.env.local`)
+| Role | Operational Scope | Beneficiary Access | Medical Vitals | Resource & Stock | AI Predictions | Document Exports |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Government** | State/District accreditation & inspection | Full roster (anonymized) | **Denied** (Privacy-safe) | State-wide demand overview | View forecasts; manage alerts | Full compliance reports |
+| **Institution** | Care home superintendent (daily operations) | Full profiles for own residents | Basic administrative data | Full CRUD on own stock; restock triggers | Run forecasts; view shortages | Care home roster & stock CSV |
+| **Doctor** | Clinical triage & geriatric review | Clinical review queue | **Full Access** (Doctor Vault) | Review medicine inventory | Run health triage; review SHAP | Doctor clinical summaries |
+| **Donor** | Verified philanthropic contributions | Anonymized impact metrics | **Denied** | View verified care home needs | General transparent utilization | Donation receipts & impact audit |
+| **NGO** | Program allocations & outreach campaigns | Enrolled residents in assigned homes | **Denied** | View supply deficits & gaps | View demand projections | Program impact audits |
+| **Volunteer** | Field logistics & supply deliveries | Minimal assigned task data | **Denied** | View delivery requisitions | View task alerts | Task completion reports |
+| **Admin** | System-wide platform governance | Full administrative access | Audit access | Full administrative access | Model registry & weights tuning | Full system backup export |
+
+---
+
+## 5. Production Environment & Deployment Runbook
+
+### 5.1 Environment Configuration (`.env.local`)
 ```ini
 # Supabase Cloud Project Configuration
 NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
@@ -93,7 +152,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
 
 # Application Base URL
-NEXT_PUBLIC_APP_URL=https://welfare.gov.in
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 # AI Adapter Mode: "demo" (local synthetic pipeline) or "remote" (external Python ML microservice)
 NEXT_PUBLIC_AI_ADAPTER_MODE=demo
@@ -102,30 +161,29 @@ NEXT_PUBLIC_AI_ADAPTER_MODE=demo
 AI_SERVICE_URL=http://127.0.0.1:8000
 ```
 
-### 3.2 Database Migration Execution Order
-Execute the SQL files in your Supabase SQL Editor in the following exact order:
-1. `supabase/migrations/001_initial_schema.sql` (Creates tables, UUID extensions, and initial RLS policies).
-2. `supabase/migrations/002_auth_triggers_and_rbac.sql` (Creates user signup triggers, helper functions, and granular role policies).
-3. `supabase/migrations/003_seed_demo_data.sql` (Seeds care homes, residents, inventory items, historical consumption, donations, alerts, and predictions).
+### 5.2 Database Migration Execution Order
+1. `supabase/migrations/001_initial_schema.sql` (12 relational tables, UUID extensions, and initial RLS policies).
+2. `supabase/migrations/002_auth_triggers_and_rbac.sql` (User signup triggers, helper functions, and granular role policies).
+3. `supabase/migrations/003_seed_demo_data.sql` (Certified care homes, residents, stock ledger, historical usage, donations, alerts, and predictions).
 
-### 3.3 Running the Application Locally
+### 5.3 Local Development & Build Commands
 ```bash
 # 1. Install dependencies
 npm install
 
-# 2. Run development server (accessible locally and on LAN)
+# 2. Run development server (accessible on host machine)
 npm run dev
 
-# 3. Create optimized production build
+# 3. Compile optimized production build
 npm run build
 
-# 4. Start production server
-npm start
+# 4. Execute system integrity test suite
+node scripts/verify-system.mjs
 ```
 
 ---
 
-## 4. Academic Integrity & Medical Safety Contracts
+## 6. Academic Integrity & Medical Safety Mandates
 
 1. **Rule 4 & 16 (No Fabricated Research):** Under no circumstances shall the application pretend an untrained model is a validated production model, nor shall it fabricate accuracy scores, MAE, RMSE, or $R^2$ values.
 2. **Rule 6 (Decision Support Only):** The platform is strictly a clinical prioritization tool. Every health assessment screen must prominently display the medical safety disclaimer stating that outputs do not constitute a medical diagnosis and do not replace licensed physician evaluation.
