@@ -1,8 +1,8 @@
 # MODULE STATUS MATRIX: AI-DRIVEN SMART WELFARE RESOURCE MANAGEMENT SYSTEM
 
 **Document Purpose:** Real-time tracking of implementation status, test coverage, and remaining items across all 15 core domain modules.  
-**Version:** 1.1.0  
-**Current Phase:** Phase 2 Completed & Verified / Ready for Phase 3 Logistics Approval  
+**Version:** 1.2.0  
+**Current Phase:** Phase 3 Completed & Verified / Ready for Phase 4 AI Forecasting Approval  
 
 ---
 
@@ -14,8 +14,8 @@
 | **2** | **Authentication & RBAC** (`/(auth)/*`) | All 7 Roles | **Phase 1 Verified** | 100% | Yes (`profiles`) | SSR Session tokens, 1-Click login helper, live Supabase sync |
 | **3** | **Institution Management** (`/institutions`) | Government / Inst | **Phase 2 Verified** | 100% | Yes (`institutions`) | Light government design, 4 KPI cards, capacity progress bar, live status approval |
 | **4** | **Beneficiary Management** (`/beneficiaries`) | Institution / Staff | **Phase 2 Verified** | 100% | Yes (`beneficiaries`) | 4 KPI cards, care home filter, auto occupancy recalculation, safe CSV export |
-| **5** | **Resource & Inventory** (`/resources`) | Institution / NGO | **Ready** | 100% | Yes (`inventory_items`) | Low-stock threshold alert triggers enabled |
-| **6** | **Donation Management** (`/donations`) | Donor / NGO | **Ready** | 100% | Yes (`donations`) | Pledged $\to$ Utilized lifecycle stepper |
+| **5** | **Resource & Inventory** (`/resources`) | Institution / NGO | **Phase 3 Verified** | 100% | Yes (`inventory_items`) | Multi-category stock ledger, live +10/+50/+100 restock, threshold alert auto-resolve |
+| **6** | **Donation Management** (`/donations`) | Donor / NGO | **Phase 3 Verified** | 100% | Yes (`donations`) | Verified receipt generator, Pledged -> Utilized lifecycle stepper, Supabase sync |
 | **7** | **Medical Records & Vault** (`/health`) | Doctor Only | **Ready** | 100% | Yes (`medical_records`) | Isolated from non-doctor roles; triage queue |
 | **8** | **AI Demand Forecasting** (`/resources`) | Government / Inst | **Ready** | 100% | Yes (`predictions`) | Dual-mode: Demo fallback + FastAPI remote |
 | **9** | **DL Health-Risk Triage** (`/health`) | Doctor Only | **Ready** | 100% | Yes (`alerts`) | Priority score $\ge 70$ alert trigger active |
