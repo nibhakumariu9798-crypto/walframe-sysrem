@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { useRole } from "@/context/role-context";
 import {
@@ -16,6 +16,14 @@ import {
   ArrowUpRight,
   ShieldAlert,
   Calendar,
+  FileText,
+  Stethoscope,
+  PlusCircle,
+  Truck,
+  ShieldCheck,
+  Clock,
+  ArrowRight,
+  ExternalLink,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -38,66 +46,109 @@ export function RoleDashboard() {
     acknowledgeAlert(alertId);
   };
 
+  // Compute key summary metrics
+  const verifiedHomes = institutions.filter((i) => i.verification_status === "verified");
+  const pendingHomes = institutions.filter((i) => i.verification_status === "pending");
+  const totalCapacity = institutions.reduce((sum, i) => sum + (i.capacity || 0), 0);
+  const totalOccupancy = institutions.reduce((sum, i) => sum + (i.current_occupancy || 0), 0);
+  const occupancyRate = totalCapacity > 0 ? Math.round((totalOccupancy / totalCapacity) * 100) : 0;
+
+  const childrenCount = beneficiaries.filter((b) => b.beneficiary_type === "child").length;
+  const elderlyCount = beneficiaries.filter((b) => b.beneficiary_type === "elderly").length;
+
+  const lowStockItems = inventory.filter((item) => item.current_stock < item.reorder_threshold);
+  const totalFoodStockKg = inventory
+    .filter((i) => i.category === "food")
+    .reduce((sum, i) => sum + i.current_stock, 0);
+
+  const pendingAlerts = alerts.filter((a) => a.status === "pending_review");
+  const highSeverityAlerts = alerts.filter(
+    (a) => (a.severity === "high" || a.severity === "critical") && a.status === "pending_review"
+  );
+  const clinicalAlerts = alerts.filter((a) => a.alert_type === "health_risk");
+  const pendingClinicalAlerts = clinicalAlerts.filter((a) => a.status === "pending_review");
+
+  const totalDonationsINR = donations.reduce((sum, d) => sum + (d.amount_inr || 0), 0);
+  const utilizedDonationsINR = donations
+    .filter((d) => d.status === "utilized")
+    .reduce((sum, d) => sum + (d.amount_inr || 0), 0);
+
   return (
     <div className="space-y-6">
-      {/* Page Title & Context Header */}
+      {/* Top Welcome & Operational Context Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
-              {currentRole === "government" && "State Welfare Oversight & Monitoring Dashboard"}
+              {currentRole === "government" && "State Welfare Oversight & Regulatory Command"}
               {currentRole === "institution" && "Institution Operations & Resource Command"}
-              {currentRole === "doctor" && "Clinical Decision Support & High-Risk Patient Queue"}
-              {currentRole === "ngo" && "NGO Program Operations & Resource Distribution"}
+              {currentRole === "doctor" && "Clinical Decision Support & High-Risk Triage"}
+              {currentRole === "ngo" && "NGO Program Operations & Resource Logistics"}
               {currentRole === "donor" && "Donor Impact & Fund Utilization Portal"}
-              {currentRole === "volunteer" && "Volunteer Field Task Center"}
-              {currentRole === "admin" && "System Administration & Global Welfare Command"}
+              {currentRole === "volunteer" && "Volunteer Field Logistics & Outreach Hub"}
+              {currentRole === "admin" && "Global System Governance & AI Oversight"}
             </h1>
-            <Badge variant="outline" className="uppercase font-mono text-[10px] tracking-wider font-extrabold bg-sky-50 border-sky-300 text-sky-800">
+            <Badge
+              variant="outline"
+              className="uppercase font-mono text-[10px] tracking-wider font-extrabold bg-sky-50 border-sky-300 text-sky-800"
+            >
               {currentRole}
             </Badge>
           </div>
           <p className="text-xs text-slate-600 mt-1 font-medium">
-            Logged in as <span className="font-bold text-slate-900">{currentProfile.full_name}</span> &bull; Regional Welfare Jurisdiction: <span className="font-semibold text-slate-700">Ranchi District</span>
+            Logged in as <span className="font-bold text-slate-900">{currentProfile.full_name}</span> &bull; Regional Welfare Jurisdiction: <span className="font-semibold text-slate-800">Ranchi District &bull; Jharkhand State</span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
           <Button variant="outline" size="sm" className="font-semibold text-slate-700 border-slate-200">
-            <Calendar className="w-3.5 h-3.5 mr-1 text-slate-500" /> March 2026
+            <Calendar className="w-3.5 h-3.5 mr-1 text-slate-500" /> Fiscal 2026-Q1
           </Button>
           <Link href="/predictions">
-            <Button size="sm" className="bg-sky-700 hover:bg-sky-800 text-white font-bold shadow-sm cursor-pointer">
-              <Sparkles className="w-3.5 h-3.5 mr-1 text-sky-200" /> Run AI Forecast
+            <Button size="sm" className="bg-sky-700 hover:bg-sky-800 text-white font-bold shadow-xs cursor-pointer">
+              <Sparkles className="w-3.5 h-3.5 mr-1 text-sky-200" /> AI Demand Forecast
             </Button>
           </Link>
         </div>
       </div>
 
-      {/* TOP KPI CARDS WITH HIGHLIGHT ACCENT BORDERS & VIBRANT ICONS */}
+      {/* 4 DYNAMIC ROLE-TAILORED KPI CARDS WITH ENTERPRISE LEFT-BORDER ACCENTS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* KPI 1: Certified Institutions (Sky Blue Highlight) */}
-        <Card className="border-t-4 border-t-sky-500 hover:shadow-md transition-all bg-white border border-slate-200/90 shadow-2xs">
+        {/* KPI 1: Primary Entity Metric (Sky Blue Left Accent) */}
+        <Card className="border-l-4 border-l-sky-600 bg-white border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                {currentRole === "doctor" ? "High Risk Alerts" : "Total Institutions"}
+                {currentRole === "doctor"
+                  ? "High-Risk Patients"
+                  : currentRole === "donor"
+                  ? "Total Contributions"
+                  : currentRole === "volunteer"
+                  ? "Assigned Field Runs"
+                  : "Certified Care Homes"}
               </p>
               <h3 className="text-3xl font-black text-slate-900 mt-1 tracking-tight">
                 {currentRole === "doctor"
-                  ? `${alerts.filter((a) => a.alert_type === "health_risk" && a.status === "pending_review").length} Cases`
+                  ? `${pendingClinicalAlerts.length} Cases`
+                  : currentRole === "donor"
+                  ? formatCurrency(totalDonationsINR)
+                  : currentRole === "volunteer"
+                  ? "4 Tasks"
                   : institutions.length}
               </h3>
               <div className="mt-1.5 flex items-center gap-1">
                 {currentRole === "doctor" ? (
                   <span className="text-rose-700 font-bold text-[11px] bg-rose-50 px-2 py-0.5 rounded-full border border-rose-200">
-                    Priority review needed
+                    Priority Score &ge; 70
+                  </span>
+                ) : currentRole === "donor" ? (
+                  <span className="text-sky-800 font-semibold text-[11px] bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+                    {donations.length} Active Records
                   </span>
                 ) : (
                   <span className="text-emerald-800 font-semibold text-[11px] bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    {institutions.filter((i) => i.verification_status === "verified").length} Verified &bull;{" "}
-                    {institutions.filter((i) => i.verification_status === "pending").length} Pending
+                    {verifiedHomes.length} Verified &bull; {pendingHomes.length} Pending
                   </span>
                 )}
               </div>
@@ -105,6 +156,10 @@ export function RoleDashboard() {
             <div className="w-12 h-12 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shadow-2xs flex-shrink-0">
               {currentRole === "doctor" ? (
                 <ShieldAlert className="w-6 h-6 text-rose-600" />
+              ) : currentRole === "donor" ? (
+                <HeartHandshake className="w-6 h-6 text-sky-600" />
+              ) : currentRole === "volunteer" ? (
+                <Truck className="w-6 h-6 text-sky-600" />
               ) : (
                 <Building2 className="w-6 h-6 text-sky-600" />
               )}
@@ -112,22 +167,27 @@ export function RoleDashboard() {
           </CardContent>
         </Card>
 
-        {/* KPI 2: Registered Beneficiaries (Emerald Green Highlight) */}
-        <Card className="border-t-4 border-t-emerald-500 hover:shadow-md transition-all bg-white border border-slate-200/90 shadow-2xs">
+        {/* KPI 2: Census & Capacity Metric (Emerald Green Left Accent) */}
+        <Card className="border-l-4 border-l-emerald-600 bg-white border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                {currentRole === "doctor" ? "Under Medical Watch" : "Registered Beneficiaries"}
+                {currentRole === "doctor"
+                  ? "Under Medical Watch"
+                  : currentRole === "donor"
+                  ? "Care Homes Reached"
+                  : "Resident Census"}
               </p>
               <h3 className="text-3xl font-black text-slate-900 mt-1 tracking-tight">
                 {currentRole === "doctor"
-                  ? `${beneficiaries.filter((b) => b.beneficiary_type === "elderly").length} Seniors`
+                  ? `${elderlyCount} Seniors`
+                  : currentRole === "donor"
+                  ? `${institutions.length} Facilities`
                   : `${beneficiaries.length} Residents`}
               </h3>
               <div className="mt-1.5">
                 <span className="text-teal-800 font-semibold text-[11px] bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
-                  {beneficiaries.filter((b) => b.beneficiary_type === "child").length} Children &bull;{" "}
-                  {beneficiaries.filter((b) => b.beneficiary_type === "elderly").length} Elderly
+                  {childrenCount} Children &bull; {elderlyCount} Elderly
                 </span>
               </div>
             </div>
@@ -137,18 +197,22 @@ export function RoleDashboard() {
           </CardContent>
         </Card>
 
-        {/* KPI 3: Contributions / Food Quota (Royal Indigo Highlight) */}
-        <Card className="border-t-4 border-t-indigo-600 hover:shadow-md transition-all bg-white border border-slate-200/90 shadow-2xs">
+        {/* KPI 3: Logistics & AI Demand Metric (Royal Indigo Left Accent) */}
+        <Card className="border-l-4 border-l-indigo-600 bg-white border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                {currentRole === "donor" ? "My Contributions" : "Next-Month AI Food Need"}
+                {currentRole === "donor"
+                  ? "Utilized Impact"
+                  : currentRole === "institution"
+                  ? "Bed Occupancy Rate"
+                  : "Next-Month AI Food Need"}
               </p>
               <h3 className="text-3xl font-black text-indigo-950 mt-1 tracking-tight">
                 {currentRole === "donor"
-                  ? formatCurrency(
-                      donations.reduce((sum, d) => sum + (d.amount_inr || 0), 0)
-                    )
+                  ? formatCurrency(utilizedDonationsINR)
+                  : currentRole === "institution"
+                  ? `${occupancyRate}%`
                   : beneficiaries.length > 0
                   ? `${Math.round(beneficiaries.length * 15.2)} kg`
                   : "0 kg"}
@@ -157,7 +221,9 @@ export function RoleDashboard() {
                 <span className="text-indigo-800 font-semibold text-[11px] bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200 inline-flex items-center gap-1">
                   <TrendingUp className="w-3 h-3 text-indigo-600" />
                   {currentRole === "donor"
-                    ? `${donations.length} Active Records`
+                    ? "Directly Allocated"
+                    : currentRole === "institution"
+                    ? `${totalOccupancy} of ${totalCapacity} Beds`
                     : beneficiaries.length > 0
                     ? `For ${beneficiaries.length} enrolled residents`
                     : "0 residents enrolled"}
@@ -170,21 +236,25 @@ export function RoleDashboard() {
           </CardContent>
         </Card>
 
-        {/* KPI 4: Welfare Alerts Active (Amber / Coral Highlight) */}
-        <Card className="border-t-4 border-t-amber-500 hover:shadow-md transition-all bg-white border border-slate-200/90 shadow-2xs">
+        {/* KPI 4: Alerts & Shortages (Amber / Coral Left Accent) */}
+        <Card className="border-l-4 border-l-amber-500 bg-white border border-slate-200/90 shadow-xs hover:shadow-md transition-all">
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                Welfare Alerts Active
+                {currentRole === "institution"
+                  ? "Low-Stock Deficits"
+                  : "Active Alerts"}
               </p>
               <h3 className="text-3xl font-black text-amber-950 mt-1 tracking-tight">
-                {alerts.filter((a) => a.status === "pending_review").length}
+                {currentRole === "institution"
+                  ? `${lowStockItems.length} SKUs`
+                  : `${pendingAlerts.length} Actionable`}
               </h3>
               <div className="mt-1.5">
                 <span className="text-amber-800 font-semibold text-[11px] bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                  {alerts.length === 0
-                    ? "All systems normal"
-                    : `${alerts.filter((a) => a.status === "acknowledged").length} Acknowledged`}
+                  {highSeverityAlerts.length > 0
+                    ? `${highSeverityAlerts.length} High-Severity Alert${highSeverityAlerts.length > 1 ? "s" : ""}`
+                    : "Zero Critical Deficits"}
                 </span>
               </div>
             </div>
@@ -196,25 +266,36 @@ export function RoleDashboard() {
 
       </div>
 
-      {/* DOCTOR SPECIFIC PRIORITY QUEUE (If Doctor Role is Active) */}
+      {/* ROLE SPECIFIC OPERATIONAL ACTION WORKSPACE */}
       {currentRole === "doctor" && (
-        <Card className="border-rose-200 bg-rose-50/50 shadow-sm">
+        <Card className="border-l-4 border-l-rose-600 border-rose-200 bg-rose-50/50 shadow-xs">
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <CardTitle className="text-base text-rose-950 flex items-center gap-2 font-bold">
                   <Activity className="w-4 h-4 text-rose-600" />
-                  Clinical Decision Support — Priority Patient Review Queue
+                  Clinical Decision Support — High-Risk Resident Queue ({clinicalAlerts.length})
                 </CardTitle>
-                <CardDescription className="text-rose-900/80">
-                  Deep learning health-risk classification and multi-factor heuristic priority score (&gt; 70 threshold). Decision support only.
+                <CardDescription className="text-rose-900/80 text-xs">
+                  Priority triage heuristics scoring blood pressure, glucose, and age vulnerability. Decision support only — not a clinical diagnosis.
                 </CardDescription>
               </div>
-              <Badge variant="danger" className="font-bold">Doctor Action Required</Badge>
+              <div className="flex items-center gap-2">
+                <Link href="/health">
+                  <Button size="sm" variant="danger" className="font-bold shadow-xs">
+                    <Stethoscope className="w-3.5 h-3.5 mr-1" /> Open Doctor Vault
+                  </Button>
+                </Link>
+                <Link href="/predictions">
+                  <Button size="sm" variant="outline" className="border-rose-300 text-rose-800 bg-white font-bold">
+                    SHAP Explainability &rarr;
+                  </Button>
+                </Link>
+              </div>
             </div>
           </CardHeader>
           <CardContent>
-            {alerts.filter((a) => a.alert_type === "health_risk").length === 0 ? (
+            {clinicalAlerts.length === 0 ? (
               <div className="p-6 text-center text-xs text-rose-900 bg-white rounded-xl border border-rose-200">
                 <CheckCircle2 className="w-7 h-7 text-emerald-600 mx-auto mb-2" />
                 <p className="font-bold text-sm">No Urgent Clinical Alerts</p>
@@ -222,7 +303,7 @@ export function RoleDashboard() {
               </div>
             ) : (
               <div className="space-y-3">
-                {alerts.filter((a) => a.alert_type === "health_risk").map((alert) => {
+                {clinicalAlerts.map((alert) => {
                   const isAck = alert.status === "acknowledged";
                   return (
                     <div
@@ -230,17 +311,19 @@ export function RoleDashboard() {
                       className="p-4 bg-white rounded-xl border border-rose-200 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-2xs"
                     >
                       <div className="space-y-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="font-bold text-sm text-slate-900">
                             {alert.title}
                           </span>
-                          <Badge variant="danger" className="font-bold">Priority: {alert.priority_score}/100</Badge>
+                          <Badge variant="danger" className="font-bold text-[10px]">
+                            Priority Score: {alert.priority_score || 85}/100
+                          </Badge>
+                          <Badge variant="outline" className="text-[10px] bg-slate-50 border-slate-200 text-slate-600">
+                            {formatDate(alert.created_at)}
+                          </Badge>
                         </div>
-                        <p className="text-xs text-slate-700">
+                        <p className="text-xs text-slate-700 leading-relaxed">
                           {alert.description}
-                        </p>
-                        <p className="text-[11px] text-slate-500">
-                          Detected on {formatDate(alert.created_at)}
                         </p>
                       </div>
 
@@ -254,17 +337,106 @@ export function RoleDashboard() {
                             size="sm"
                             variant="danger"
                             onClick={() => handleAcknowledge(alert.id)}
-                            className="font-bold shadow-xs cursor-pointer"
+                            className="font-bold shadow-xs cursor-pointer text-xs"
                           >
                             Review &amp; Acknowledge
                           </Button>
                         )}
+                        <Link href="/health">
+                          <Button size="sm" variant="outline" className="text-xs font-bold border-slate-200 text-slate-700">
+                            Examine Vitals
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {currentRole === "government" && (
+        <Card className="border-l-4 border-l-sky-600 bg-sky-50/40 border border-sky-200 shadow-xs">
+          <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-sky-700" />
+                <h3 className="font-bold text-slate-900 text-sm">State Regulatory &amp; Accreditation Desk</h3>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                You have <strong>{pendingHomes.length} care home facilities</strong> awaiting official state verification. Review accreditation documentation to certify compliance under the Welfare Protection Act.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link href="/institutions">
+                <Button size="sm" className="bg-sky-700 hover:bg-sky-800 text-white font-bold text-xs">
+                  Review Facilities &rarr;
+                </Button>
+              </Link>
+              <Link href="/reports">
+                <Button size="sm" variant="outline" className="border-sky-300 text-sky-800 bg-white font-bold text-xs">
+                  <FileText className="w-3.5 h-3.5 mr-1" /> Audit Exports
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {currentRole === "institution" && (
+        <Card className="border-l-4 border-l-emerald-600 bg-emerald-50/40 border border-emerald-200 shadow-xs">
+          <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-emerald-700" />
+                <h3 className="font-bold text-slate-900 text-sm">Care Home Daily Command Center</h3>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                Current Bed Occupancy: <strong>{occupancyRate}% ({totalOccupancy} of {totalCapacity} beds filled)</strong>. {lowStockItems.length > 0 ? `${lowStockItems.length} items require replenishment to prevent shortage.` : "All essential food and medicine stocks are adequate."}
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link href="/beneficiaries">
+                <Button size="sm" className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs">
+                  <PlusCircle className="w-3.5 h-3.5 mr-1" /> Admit Resident
+                </Button>
+              </Link>
+              <Link href="/resources">
+                <Button size="sm" variant="outline" className="border-emerald-300 text-emerald-800 bg-white font-bold text-xs">
+                  Restock Inventory &rarr;
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {currentRole === "donor" && (
+        <Card className="border-l-4 border-l-indigo-600 bg-indigo-50/40 border border-indigo-200 shadow-xs">
+          <CardContent className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <HeartHandshake className="w-5 h-5 text-indigo-700" />
+                <h3 className="font-bold text-slate-900 text-sm">Philanthropic Impact &amp; 80G Tax Exemption Center</h3>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-2xl">
+                All donations are 100% reconciled to food grains, winter clothing, and pediatric/geriatric medicine. <strong>{formatCurrency(totalDonationsINR)}</strong> contributed to verified shelters.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link href="/donations">
+                <Button size="sm" className="bg-indigo-700 hover:bg-indigo-800 text-white font-bold text-xs">
+                  Log New Donation &rarr;
+                </Button>
+              </Link>
+              <Link href="/reports">
+                <Button size="sm" variant="outline" className="border-indigo-300 text-indigo-800 bg-white font-bold text-xs">
+                  <FileText className="w-3.5 h-3.5 mr-1" /> Download Receipt Ledger
+                </Button>
+              </Link>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -288,7 +460,7 @@ export function RoleDashboard() {
                     Machine Learning regression models (XGBoost &amp; Random Forest) predicting requirements based on verified resident census.
                   </CardDescription>
                 </div>
-                <Badge variant="indigo" className="font-bold">Dynamic Census Model</Badge>
+                <Badge variant="indigo" className="font-bold text-[10px]">Dynamic Census Model</Badge>
               </div>
             </CardHeader>
             <CardContent className="pt-5">
@@ -447,13 +619,22 @@ export function RoleDashboard() {
           {/* Active Alerts Queue */}
           <Card className="bg-white border border-slate-200 shadow-sm">
             <CardHeader className="border-b border-slate-100 pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-slate-900 font-extrabold">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                Welfare Alerts Queue ({alerts.length})
-              </CardTitle>
-              <CardDescription className="text-slate-500 text-xs">
-                Urgent inventory, verification, and medical notifications
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2 text-slate-900 font-extrabold">
+                    <AlertTriangle className="w-4 h-4 text-amber-600" />
+                    Welfare Alerts Queue ({alerts.length})
+                  </CardTitle>
+                  <CardDescription className="text-slate-500 text-xs">
+                    Urgent inventory, verification, and medical notifications
+                  </CardDescription>
+                </div>
+                <Link href="/notifications">
+                  <Button variant="ghost" size="sm" className="font-bold text-sky-700 hover:text-sky-900 hover:bg-sky-50 text-xs">
+                    Command Desk &rarr;
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent className="pt-4">
               {alerts.length === 0 ? (
@@ -466,7 +647,7 @@ export function RoleDashboard() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {alerts.map((alert) => {
+                  {alerts.slice(0, 5).map((alert) => {
                     const isAck = alert.status === "acknowledged";
                     return (
                       <div
@@ -474,14 +655,14 @@ export function RoleDashboard() {
                         className={`p-4 rounded-xl border text-xs transition-all shadow-2xs ${
                           isAck
                             ? "bg-slate-50 border-slate-200 opacity-70"
-                            : alert.severity === "high"
+                            : alert.severity === "high" || alert.severity === "critical"
                             ? "bg-rose-50/70 border-l-4 border-l-rose-500 border border-rose-200"
                             : "bg-amber-50/70 border-l-4 border-l-amber-500 border border-amber-200"
                         }`}
                       >
                         <div className="flex items-center justify-between mb-1.5 gap-2">
                           <span className={`font-bold text-xs ${
-                            alert.severity === "high"
+                            alert.severity === "high" || alert.severity === "critical"
                               ? "text-rose-950"
                               : "text-amber-950"
                           }`}>
@@ -489,7 +670,7 @@ export function RoleDashboard() {
                           </span>
                           <Badge
                             variant={
-                              alert.severity === "high"
+                              alert.severity === "high" || alert.severity === "critical"
                                 ? "danger"
                                 : alert.severity === "medium"
                                 ? "warning"
@@ -501,7 +682,7 @@ export function RoleDashboard() {
                           </Badge>
                         </div>
                         <p className={`text-[11px] leading-relaxed ${
-                          alert.severity === "high"
+                          alert.severity === "high" || alert.severity === "critical"
                             ? "text-rose-900"
                             : "text-amber-900"
                         }`}>
@@ -535,13 +716,22 @@ export function RoleDashboard() {
           {/* Transparent Donation Utilization */}
           <Card className="bg-white border border-slate-200 shadow-sm">
             <CardHeader className="border-b border-slate-100 pb-3">
-              <CardTitle className="text-base flex items-center gap-2 text-slate-900 font-extrabold">
-                <HeartHandshake className="w-4 h-4 text-emerald-600" />
-                Donations &amp; Utilization ({donations.length})
-              </CardTitle>
-              <CardDescription className="text-slate-500 text-xs">
-                Public transparency tracking for donor fund allocations
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-base flex items-center gap-2 text-slate-900 font-extrabold">
+                    <HeartHandshake className="w-4 h-4 text-emerald-600" />
+                    Donations &amp; Utilization ({donations.length})
+                  </CardTitle>
+                  <CardDescription className="text-slate-500 text-xs">
+                    Public transparency tracking for donor fund allocations
+                  </CardDescription>
+                </div>
+                <Link href="/donations">
+                  <Button variant="ghost" size="sm" className="font-bold text-emerald-700 hover:text-emerald-900 hover:bg-emerald-50 text-xs">
+                    All Donations &rarr;
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent className="pt-4">
               {donations.length === 0 ? (
@@ -554,7 +744,7 @@ export function RoleDashboard() {
                 </div>
               ) : (
                 <div className="space-y-3">
-                  {donations.map((don) => (
+                  {donations.slice(0, 4).map((don) => (
                     <div
                       key={don.id}
                       className="p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-xs shadow-2xs"
