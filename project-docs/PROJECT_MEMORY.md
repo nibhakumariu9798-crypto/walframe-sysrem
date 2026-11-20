@@ -2,8 +2,8 @@
 
 **Document Purpose:** Canonical Persistent Memory and Research Translation Map  
 **Workspace Root:** `c:\Users\Nibha kumari gupta\Desktop\mca nibha\practice of project\Wellfare System`  
-**Current Framework Stack:** Next.js 16 (App Router) + React 19 + TypeScript + Supabase + Python FastAPI + Tailwind CSS  
-**Last Updated:** Phase 0 Completion  
+**Current Framework Stack:** Next.js 16 (App Router) + React 19 + TypeScript 5 + Supabase (Auth, Postgres, Storage, RLS) + Python FastAPI + Tailwind CSS  
+**Last Updated:** Phase 7 Completion & Full System Hardening  
 
 ---
 
@@ -14,14 +14,14 @@ The system addresses critical operational challenges in child care homes (orphan
 - **Old Age Homes:** Focus on geriatric nutrition, chronic illness management (hypertension, diabetes), mobility assistance, and prescription adherence.
 - **Integrated Care Facilities:** Mixed environments housing both vulnerable children and senior citizens.
 
-### 7 Stakeholder Personas
-1. **Government (`government`):** State Department of Women & Child Development / Social Welfare. Audits institutions, approves state verification licenses, monitors regional safety.
-2. **Institution Superintendent (`institution`):** Manages local resident rosters, requests supplies, records inventory changes, logs facility issues.
-3. **NGO Worker (`ngo`):** Distributes resources across multiple care homes, plans community food drives, coordinates relief.
-4. **Doctor (`doctor`):** Licensed physician examining resident vitals, reviewing automated health-risk triage alerts, signing off on medical logs.
-5. **Donor (`donor`):** Individual or corporate donor contributing monetary funds or physical goods; tracks verifiable impact receipts.
-6. **Volunteer (`volunteer`):** Community volunteer providing tutoring, companionship, or logistical delivery support.
-7. **System Administrator (`admin`):** Technical administrator managing database migrations, role provisioning, and audit oversight.
+### 7 Stakeholder Personas & RBAC Scopes
+1. **Government (`government`):** State Department of Women & Child Development / Social Welfare. Audits care home accreditation, monitors district-wide bed capacity, and exports official state compliance records.
+2. **Institution Superintendent (`institution`):** Manages local care home resident rosters, monitors bed occupancy rates, executes live inventory restocks, and runs AI demand projections.
+3. **NGO Worker (`ngo`):** Distributes resources across multiple care homes, tracks community supply gaps, and coordinates delivery logistics.
+4. **Doctor (`doctor`):** Licensed physician examining resident vitals in the Doctor Vault, evaluating clinical priority scores ($0-100$), inspecting SHAP factor contributions, and reviewing triage alerts.
+5. **Donor (`donor`):** Individual or corporate philanthropist contributing monetary funds or physical goods; tracks verifiable 80G tax receipts and program allocations.
+6. **Volunteer (`volunteer`):** Community volunteer executing assigned logistics runs, medicine deliveries, and ground assistance.
+7. **System Administrator (`admin`):** Technical administrator managing database migrations, AI model registries, priority score formula weights, and immutable audit ledgers.
 
 ---
 
@@ -31,7 +31,7 @@ The system addresses critical operational challenges in child care homes (orphan
 ┌────────────────────────────────────────────────────────┐
 │                   Next.js 16 Frontend                  │
 │       (App Router, React 19, Strict TypeScript)        │
-│              Tailwind CSS v4 + shadcn/ui               │
+│          Tailwind CSS v4 + Accessible Primitives       │
 └───────────────▲────────────────────────▲───────────────┘
                 │                        │
        REST / WebSocket          HTTP REST (JSON)
@@ -56,7 +56,7 @@ The system addresses critical operational challenges in child care homes (orphan
 
 1. **Non-Fabrication Policy (Rule 4 & 16):**
    - Untrained or simulated models must never report fabricated metrics (e.g., claiming 99.4% accuracy or 0.01 MAE).
-   - Unvalidated values in benchmarks are marked `TBD` or `XX.XX` until empirical training runs are completed.
+   - Unvalidated values in benchmarks are marked `TBD` or `XX.XX` until empirical training runs against validated datasets are performed.
 2. **Clinical Decision Support Boundary (Rule 6):**
    - Health-risk outputs are classified as clinical decision-support triage scores only and must never be presented as an autonomous medical diagnosis or prescription.
    - Any resident receiving a composite priority score $\ge 70$ triggers an immediate high-priority alert for human doctor evaluation.
@@ -65,13 +65,13 @@ The system addresses critical operational challenges in child care homes (orphan
 
 ---
 
-## 4. Current State of Development
+## 4. Final System State (Phases 0 through 7 Complete)
 
 - **Phase 0 (Foundation & Blueprints):** Completed and documented.
-- **Phase 1 (Database Setup, Auth & Granular RBAC):** Completed and verified.
-  - 3 complete SQL migrations created in `supabase/migrations/` (`001_initial_schema.sql`, `002_auth_triggers_and_rbac.sql`, `003_seed_demo_data.sql`).
-  - RPC occupancy triggers, non-recursive RLS security definer helpers, and cascade constraints verified.
-  - Full Supabase SSR Auth suite with Server Actions (`signIn`, `signUp`, `signOut`, `resetPasswordForEmail`, `updatePassword`).
-  - Middleware route protection redirecting unauthorized traffic and routing authenticated users.
-- **Verification Suite:** `scripts/verify-system.mjs` running **61 automated assertions** across schema, cascades, RLS, AI math, and auth security (100% passing).
-- **Core App Shell:** Next.js 16 App Router compiles all 21 routes with 0 TypeScript and 0 ESLint errors.
+- **Phase 1 (Database Setup, Auth & Granular RBAC):** Completed and verified (3 SQL migrations, SSR session cookies, 1-Click test credentials).
+- **Phase 2 (Care Homes & Resident Management):** Completed and verified (facility directory, bed occupancy calculations, admission modal, safe CSV export).
+- **Phase 3 (Logistics, Resources & Donations):** Completed and verified (multi-category stock ledger, +10/+50/+100 quick restock, 80G tax receipt generator).
+- **Phase 4 (AI Demand Forecasting):** Completed and verified (XGBoost/Random Forest regression models, dynamic census scaling).
+- **Phase 5 (Deep Learning Clinical Triage & Doctor Vault):** Completed and verified (Doctor Vault, vitals modal, Priority Score gauge, SHAP waterfall plot).
+- **Phase 6 (Dashboards, Reports & Incident Command):** Completed and verified (7 role-tailored dashboards, 6 CSV audit ledgers with preview modal, incident command desk).
+- **Phase 7 (Comprehensive Hardening & Verification):** Completed and verified (82/82 automated tests passing, 0 TypeScript errors, production documentation updated).

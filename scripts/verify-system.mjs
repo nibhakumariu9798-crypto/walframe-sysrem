@@ -190,6 +190,83 @@ const serverClientContent = fs.readFileSync(serverClientPath, "utf-8");
 assert(serverClientContent.includes("createServerClient"), "Server client uses @supabase/ssr createServerClient with cookie handling");
 
 // -------------------------------------------------------------
+// Test Suite 6: Advanced AI Clinical Intelligence & Governance
+// -------------------------------------------------------------
+console.log("\n--- 6. Advanced AI Clinical Intelligence & Governance ---");
+
+const aiComponentsDir = path.join(rootDir, "src", "components", "ai");
+const kpiOverviewPath = path.join(aiComponentsDir, "clinical-kpi-overview.tsx");
+const riskAnalyticsPath = path.join(aiComponentsDir, "clinical-risk-analytics.tsx");
+const shapEnginePath = path.join(aiComponentsDir, "shap-explainability-engine.tsx");
+const evalCenterPath = path.join(aiComponentsDir, "model-evaluation-center.tsx");
+const driftMonitorPath = path.join(aiComponentsDir, "data-drift-monitor.tsx");
+const registryTablePath = path.join(aiComponentsDir, "model-registry-table.tsx");
+const auditLedgerPath = path.join(aiComponentsDir, "enhanced-audit-ledger.tsx");
+const simSandboxPath = path.join(aiComponentsDir, "simulation-sandbox.tsx");
+
+assert(fs.existsSync(kpiOverviewPath), "Clinical KPI Overview component exists");
+assert(fs.existsSync(riskAnalyticsPath), "Clinical Risk Analytics component exists");
+assert(fs.existsSync(shapEnginePath), "SHAP Explainability Engine component exists");
+assert(fs.existsSync(evalCenterPath), "Model Evaluation Center component exists");
+assert(fs.existsSync(driftMonitorPath), "Data Drift Monitor component exists");
+assert(fs.existsSync(registryTablePath), "Model Registry & Version Management component exists");
+assert(fs.existsSync(auditLedgerPath), "Enhanced Audit Ledger component exists");
+assert(fs.existsSync(simSandboxPath), "Simulation Sandbox component exists");
+
+const recordVitalsModalPath = path.join(rootDir, "src", "components", "modals", "record-vitals-modal.tsx");
+const simForecastModalPath = path.join(rootDir, "src", "components", "modals", "simulate-forecast-modal.tsx");
+assert(fs.existsSync(recordVitalsModalPath), "Record Vitals Modal component exists");
+assert(fs.existsSync(simForecastModalPath), "Simulate Forecast Modal component exists");
+
+// -------------------------------------------------------------
+// Test Suite 7: Phase 6 Operational Dashboards, Ledgers & Incident Hub
+// -------------------------------------------------------------
+console.log("\n--- 7. Operational Dashboards, Document Reports & Alerts ---");
+
+const roleDashboardPath = path.join(rootDir, "src", "components", "dashboard", "role-dashboard.tsx");
+const roleDashboardContent = fs.readFileSync(roleDashboardPath, "utf-8");
+assert(roleDashboardContent.includes("currentRole === \"government\""), "Role dashboard supports Government role");
+assert(roleDashboardContent.includes("currentRole === \"doctor\""), "Role dashboard supports Doctor role");
+assert(roleDashboardContent.includes("currentRole === \"institution\""), "Role dashboard supports Institution role");
+assert(roleDashboardContent.includes("currentRole === \"donor\""), "Role dashboard supports Donor role");
+assert(roleDashboardContent.includes("border-l-4"), "Role dashboard utilizes enterprise left-accent styling");
+
+const notificationsPagePath = path.join(rootDir, "src", "app", "notifications", "page.tsx");
+const notificationsContent = fs.readFileSync(notificationsPagePath, "utf-8");
+assert(notificationsContent.includes("searchQuery"), "Notifications page includes text search");
+assert(notificationsContent.includes("handleMarkAllVisible"), "Notifications page includes batch acknowledgment");
+assert(notificationsContent.includes("acknowledgeAlert"), "Notifications page includes real-time alert resolution");
+
+// -------------------------------------------------------------
+// Test Suite 8: Clinical Safety & Academic Integrity Hardening
+// -------------------------------------------------------------
+console.log("\n--- 8. Clinical Decision-Support & Academic Integrity ---");
+
+const healthPagePath = path.join(rootDir, "src", "app", "health", "page.tsx");
+const healthPageContent = fs.readFileSync(healthPagePath, "utf-8");
+assert(
+  /medical diagnosis/i.test(healthPageContent) &&
+  /decision support/i.test(healthPageContent),
+  "Health module displays mandatory non-diagnostic decision-support disclaimer"
+);
+
+const predictionsPagePath = path.join(rootDir, "src", "app", "predictions", "page.tsx");
+const predictionsPageContent = fs.readFileSync(predictionsPagePath, "utf-8");
+assert(
+  predictionsPageContent.includes("DECISION SUPPORT ONLY") ||
+  predictionsPageContent.includes("decision-support") ||
+  predictionsPageContent.includes("Clinical Decision Support"),
+  "Predictions module enforces clinical decision-support boundary"
+);
+
+const simSandboxContent = fs.readFileSync(simSandboxPath, "utf-8");
+assert(
+  simSandboxContent.includes("NOT PERSISTED") ||
+  simSandboxContent.includes("Simulation"),
+  "Simulation sandbox explicitly warns that simulations are not real medical records"
+);
+
+// -------------------------------------------------------------
 // Test Summary
 // -------------------------------------------------------------
 console.log("\n=======================================================");
